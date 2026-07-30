@@ -2,10 +2,10 @@
     "tanggal": "30 Juli 2026",
     "waktu": "12:00 WITA",
     "status_wilayah": {
-        "sangat_rawan": "Paser, PPU, Balikpapan, Kukar Selatan, Kutim Selatan.",
-        "waspada": "Samarinda, Kukar Tengah.",
+        "sangat_rawan": "Paser, Penajam Paser Utara (PPU), Balikpapan, Kukar Selatan, Kutim Selatan.",
+        "waspada": "Kota Samarinda, Kukar Tengah.",
         "aman": "Mahakam Ulu, Berau."
     },
-    "ringkasan": "Meski sempat terjadi hujan lokal di Samarinda 17mm, lapisan bawah tanah masih kering. Waspada api bawah permukaan (gambut) jika terjadi karhutla.",
-    "rekomendasi": "BPBD dan warga diharap siaga. Jangan tinggalkan api bekas bakaran sampah sebelum benar-benar disiram hingga padam."
+    "ringkasan": "Berdasarkan pemantauan indikator FDRS BMKG terbaru, parameter FFMC (serasah permukaan) dan BUI (akumulasi bahan organik) di wilayah Kaltim bagian selatan dan pesisir berada pada kategori Sangat Mudah Terbakar. Waspadai potensi api cepat merambat akibat angin permukaan.",
+    "rekomendasi": "1. Dilarang keras membuka lahan dengan cara dibakar (Zero Burning Policy).\n2. Warga diimbau tidak membuang puntung rokok sembarangan di area bersemak kering.\n3. BPBD, Manggala Agni, dan Posko Karhutla di kawasan PPU, Paser, Balikpapan, dan Kukar disiagakan untuk patroli darat."
 }
