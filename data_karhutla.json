@@ -1,11 +1,11 @@
 {
-    "tanggal": "29 Juli 2026",
-    "waktu": "06:00 UTC",
+    "tanggal": "30 Juli 2026",
+    "waktu": "12:00 WITA",
     "status_wilayah": {
-        "sangat_rawan": "Paser, Penajam Paser Utara (PPU), Balikpapan, Kukar Selatan.",
-        "waspada": "Kota Samarinda, Kukar Tengah.",
-        "aman": "Mahakam Ulu, Berau Barat."
+        "sangat_rawan": "Paser, PPU, Balikpapan, Kukar Selatan, Kutim Selatan.",
+        "waspada": "Samarinda, Kukar Tengah.",
+        "aman": "Mahakam Ulu, Berau."
     },
-    "ringkasan": "Rumput dan serasah di permukaan tanah dalam kondisi sangat kering. Kecepatan angin mendorong penyebaran api yang sangat cepat apabila terjadi percikan.",
-    "rekomendasi": "Dilarang membuang puntung rokok sembarangan dan dilarang keras membuka lahan dengan cara dibakar."
+    "ringkasan": "Meski sempat terjadi hujan lokal di Samarinda 17mm, lapisan bawah tanah masih kering. Waspada api bawah permukaan (gambut) jika terjadi karhutla.",
+    "rekomendasi": "BPBD dan warga diharap siaga. Jangan tinggalkan api bekas bakaran sampah sebelum benar-benar disiram hingga padam."
 }
