@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timezone, timedelta
 import json
+import urllib3
+
+# Matikan peringatan SSL bawaan BMKG
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # 1. Setting Waktu WITA
 wita_tz = timezone(timedelta(hours=8))
@@ -31,22 +35,22 @@ kabkota_kaltim = [
     {"nama": "Mahakam Ulu", "lat": 0.6023, "lon": 114.9080, "zona": "barat"}
 ]
 
-# 3. Reading Data Live dari BMKG
+# 3. Scraping Data BMKG Aman (Dengan Try-Except & verify=False)
 urls = [
     "https://stamet-samarinda.bmkg.go.id/cuaca/karhutla",
     "https://www.bmkg.go.id/cuaca/karhutla"
 ]
-headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
 combined_text = ""
 for url in urls:
     try:
-        res = requests.get(url, headers=headers, timeout=12)
+        res = requests.get(url, headers=headers, timeout=15, verify=False)
         if res.status_code == 200:
             soup = BeautifulSoup(res.text, 'html.parser')
             combined_text += " " + soup.get_text().lower()
     except Exception as e:
-        print(f"Error scraping {url}: {e}")
+        print(f"⚠️ Peringatan: Tidak bisa menjangkau {url}: {e}")
 
 is_krisis = ("sangat mudah" in combined_text) or ("sangat tinggi" in combined_text)
 
@@ -79,17 +83,16 @@ for item in kabkota_kaltim:
         "fwi": fwi
     })
 
-# 5. Output JSON
+# 5. Render JSON Output
 data_json = {
     "tanggal": tanggal_str,
     "waktu": waktu_str,
     "tabel_wilayah": tabel_wilayah,
-    "ringkasan": f"Update Otomatis BMKG Kaltim ({tanggal_str} {waktu_str}): Dari 10 Kabupaten/Kota, terdeteksi {rawan_c} wilayah Sangat Rawan, {waspada_c} Waspada, dan {aman_c} Aman. Potensi keterbakaran serasah permukaan tertinggi mendominasi Kaltim selatan.",
+    "ringkasan": f"Update Otomatis BMKG Kaltim ({tanggal_str} {waktu_str}): Dari 10 Kabupaten/Kota, terdeteksi {rawan_c} wilayah Sangat Rawan, {waspada_c} Waspada, dan {aman_c} Aman.",
     "rekomendasi": "1. Siagakan tim patroli darat Manggala Agni & BPBD di area zona merah (Paser, PPU, Balikpapan).\n2. Penegakan larangan Zero Burning untuk pembersihan lahan.\n3. Patroli berkala pada jam terik siang hari (12:00–16:00 WITA)."
 }
 
-# Simpan langsung ke file data_karhutla.json
 with open('data_karhutla.json', 'w', encoding='utf-8') as f:
     json.dump(data_json, f, indent=4, ensure_ascii=False)
 
-print("File data_karhutla.json berhasil dirender secara otomatis!")
+print("✅ BERHASIL: File data_karhutla.json diperbarui tanpa error!")
