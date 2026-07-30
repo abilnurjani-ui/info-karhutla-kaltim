@@ -1,98 +1,108 @@
 {
     "tanggal": "30 Juli 2026",
-    "waktu": "14:00 WITA",
+    "waktu": "14:22 WITA",
     "tabel_wilayah": [
         {
             "nama": "Paser",
             "lat": -1.8974,
             "lon": 116.0975,
             "status": "Sangat Rawan",
-            "ffmc": "Sangat Tinggi",
-            "dmc": "Sangat Tinggi",
-            "dc": "Tinggi",
-            "fwi": "Sangat Tinggi"
+            "ffmc": "Sangat Tinggi (>91.5)",
+            "dmc": "Sangat Tinggi (>60.0)",
+            "dc": "Tinggi (>300)",
+            "fwi": "Sangat Tinggi (>28.0)"
         },
         {
             "nama": "Penajam Paser Utara",
             "lat": -1.2588,
             "lon": 116.5772,
             "status": "Sangat Rawan",
-            "ffmc": "Sangat Tinggi",
-            "dmc": "Sangat Tinggi",
-            "dc": "Tinggi",
-            "fwi": "Sangat Tinggi"
+            "ffmc": "Sangat Tinggi (>91.5)",
+            "dmc": "Sangat Tinggi (>60.0)",
+            "dc": "Tinggi (>300)",
+            "fwi": "Sangat Tinggi (>28.0)"
         },
         {
             "nama": "Balikpapan",
             "lat": -1.2379,
             "lon": 116.8529,
             "status": "Sangat Rawan",
-            "ffmc": "Sangat Tinggi",
-            "dmc": "Tinggi",
-            "dc": "Sedang",
-            "fwi": "Sangat Tinggi"
-        },
-        {
-            "nama": "Kutai Kartanegara (Selatan)",
-            "lat": -0.4439,
-            "lon": 116.9813,
-            "status": "Sangat Rawan",
-            "ffmc": "Sangat Tinggi",
-            "dmc": "Sangat Tinggi",
-            "dc": "Sedang",
-            "fwi": "Tinggi"
-        },
-        {
-            "nama": "Kutai Timur (Selatan)",
-            "lat": 0.5387,
-            "lon": 117.5886,
-            "status": "Sangat Rawan",
-            "ffmc": "Sangat Tinggi",
-            "dmc": "Tinggi",
-            "dc": "Rendah",
-            "fwi": "Tinggi"
+            "ffmc": "Sangat Tinggi (>91.5)",
+            "dmc": "Sangat Tinggi (>60.0)",
+            "dc": "Tinggi (>300)",
+            "fwi": "Sangat Tinggi (>28.0)"
         },
         {
             "nama": "Samarinda",
             "lat": -0.5021,
             "lon": 117.1536,
             "status": "Waspada",
-            "ffmc": "Tinggi",
-            "dmc": "Tinggi",
-            "dc": "Rendah",
-            "fwi": "Sedang"
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
         },
         {
-            "nama": "Kutai Kartanegara (Tengah)",
-            "lat": -0.2186,
-            "lon": 116.4883,
+            "nama": "Kutai Kartanegara",
+            "lat": -0.4439,
+            "lon": 116.9813,
             "status": "Waspada",
-            "ffmc": "Tinggi",
-            "dmc": "Sedang",
-            "dc": "Rendah",
-            "fwi": "Sedang"
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Bontang",
+            "lat": 0.1333,
+            "lon": 117.5,
+            "status": "Waspada",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Kutai Timur",
+            "lat": 0.5387,
+            "lon": 117.5886,
+            "status": "Waspada",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Kutai Barat",
+            "lat": -0.2311,
+            "lon": 115.698,
+            "status": "Aman",
+            "ffmc": "Rendah (<80.0)",
+            "dmc": "Rendah (<20.0)",
+            "dc": "Rendah (<200)",
+            "fwi": "Rendah (<2.0)"
         },
         {
             "nama": "Berau",
             "lat": 2.1523,
             "lon": 117.398,
-            "status": "Aman",
-            "ffmc": "Rendah",
-            "dmc": "Rendah",
-            "dc": "Rendah",
-            "fwi": "Rendah"
+            "status": "Waspada",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
         },
         {
             "nama": "Mahakam Ulu",
             "lat": 0.6023,
             "lon": 114.908,
             "status": "Aman",
-            "ffmc": "Rendah",
-            "dmc": "Rendah",
-            "dc": "Rendah",
-            "fwi": "Rendah"
+            "ffmc": "Rendah (<80.0)",
+            "dmc": "Rendah (<20.0)",
+            "dc": "Rendah (<200)",
+            "fwi": "Rendah (<2.0)"
         }
     ],
-    "ringkasan": "Evaluasi parameter FDRS BMKG menunjukkan tingkat kemudahan terbakar serasah permukaan (FFMC) berstatus Sangat Tinggi dominan di wilayah Kaltim bagian selatan dan pesisir timur. Potensi laju penyebaran api sangat cepat.",
-    "rekomendasi": "1. Kesiapsiagaan penuh BPBD, Manggala Agni, dan Posko Karhutla di kawasan Paser, PPU, Balikpapan, dan Kukar.\n2. Penegakan larangan pembukaan lahan dengan cara dibakar.\n3. Patroli berkala pada jam rawan (12:00-16:00 WITA)."
+    "ringkasan": "Update Real-time BMKG (30 Juli 2026 14:22 WITA): Dari 10 Kabupaten/Kota di Kaltim, terdeteksi 3 wilayah Sangat Rawan, 5 Waspada, dan 2 Aman. Kerawanan tinggi dominan di sektor selatan akibat tingginya parameter FFMC.",
+    "rekomendasi": "1. Siagakan tim patroli darat Manggala Agni & BPBD di area zona merah (Paser, PPU, Balikpapan).\n2. Penegakan larangan Zero Burning untuk pembersihan lahan.\n3. Patroli berkala pada jam terik siang hari (12:00–16:00 WITA)."
 }
