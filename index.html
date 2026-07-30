@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peringatan Dini Karhutla Kaltim - BMKG</title>
+    <!-- Menggunakan Tailwind CSS untuk desain cepat -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    
+    <!-- Bagian Header (Judul) -->
+    <div class="bg-blue-800 text-white p-6 shadow-md text-center">
+        <h1 class="text-3xl font-bold">Informasi Potensi Karhutla Kalimantan Timur</h1>
+        <p class="mt-2 text-blue-200">Stasiun Meteorologi APT Pranoto Samarinda - BMKG</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto p-6 mt-4">
+        <!-- Status Update Waktu -->
+        <div class="text-right mb-4">
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold" id="update-waktu">
+                Memuat data...
+            </span>
+        </div>
+
+        <!-- Kartu Indikator Bahaya (3 Warna) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-red-100 border-l-4 border-red-600 p-4 rounded shadow">
+                <h3 class="font-bold text-red-800 text-lg">🔴 SANGAT RAWAN (Awas)</h3>
+                <p class="text-sm mt-2 text-gray-700" id="wilayah-merah">Memuat...</p>
+            </div>
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded shadow">
+                <h3 class="font-bold text-yellow-800 text-lg">🟡 WASPADA (Siaga)</h3>
+                <p class="text-sm mt-2 text-gray-700" id="wilayah-kuning">Memuat...</p>
+            </div>
+            <div class="bg-green-100 border-l-4 border-green-500 p-4 rounded shadow">
+                <h3 class="font-bold text-green-800 text-lg">🟢 AMAN</h3>
+                <p class="text-sm mt-2 text-gray-700" id="wilayah-hijau">Memuat...</p>
+            </div>
+        </div>
+
+        <!-- Kartu Penjelasan & Rekomendasi -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-bold border-b pb-2 mb-3 text-gray-800">Analisis Kondisi Lahan & Cuaca</h2>
+            <p class="text-gray-700 leading-relaxed mb-4" id="ringkasan-analisis">Memuat data analisis...</p>
+            
+            <h2 class="text-xl font-bold border-b pb-2 mb-3 text-gray-800 mt-6">Imbauan Publik</h2>
+            <p class="text-gray-700 leading-relaxed" id="rekomendasi-publik">Memuat imbauan...</p>
+        </div>
+    </div>
+
+    <!-- Skrip untuk mengambil data dari JSON -->
+    <script>
+        fetch('data_karhutla.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('update-waktu').innerText = "Update Terakhir: " + data.tanggal + " (" + data.waktu + ")";
+                document.getElementById('wilayah-merah').innerText = data.status_wilayah.sangat_rawan;
+                document.getElementById('wilayah-kuning').innerText = data.status_wilayah.waspada;
+                document.getElementById('wilayah-hijau').innerText = data.status_wilayah.aman;
+                document.getElementById('ringkasan-analisis').innerText = data.ringkasan;
+                document.getElementById('rekomendasi-publik').innerText = data.rekomendasi;
+            })
+            .catch(error => {
+                console.error("Gagal memuat data:", error);
+                document.getElementById('ringkasan-analisis').innerText = "Gagal memuat data terbaru dari sistem.";
+            });
+    </script>
+</body>
+</html>
