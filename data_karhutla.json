@@ -1,6 +1,6 @@
 {
     "tanggal": "30 Juli 2026",
-    "waktu": "14:22 WITA",
+    "waktu": "14:25 WITA",
     "tabel_wilayah": [
         {
             "nama": "Paser",
@@ -103,6 +103,6 @@
             "fwi": "Rendah (<2.0)"
         }
     ],
-    "ringkasan": "Update Real-time BMKG (30 Juli 2026 14:22 WITA): Dari 10 Kabupaten/Kota di Kaltim, terdeteksi 3 wilayah Sangat Rawan, 5 Waspada, dan 2 Aman. Kerawanan tinggi dominan di sektor selatan akibat tingginya parameter FFMC.",
+    "ringkasan": "Update Real-time BMKG (30 Juli 2026 14:25 WITA): Dari 10 Kabupaten/Kota di Kaltim, terdeteksi 3 wilayah Sangat Rawan, 5 Waspada, dan 2 Aman. Kerawanan tinggi dominan di sektor selatan akibat tingginya parameter FFMC.",
     "rekomendasi": "1. Siagakan tim patroli darat Manggala Agni & BPBD di area zona merah (Paser, PPU, Balikpapan).\n2. Penegakan larangan Zero Burning untuk pembersihan lahan.\n3. Patroli berkala pada jam terik siang hari (12:00–16:00 WITA)."
 }
