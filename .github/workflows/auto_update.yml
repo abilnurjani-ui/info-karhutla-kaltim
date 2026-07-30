@@ -2,12 +2,11 @@ name: Auto Update Data Karhutla
 
 on:
   schedule:
-    # Berjalan otomatis jam 07:00 WITA (23:00 UTC) & jam 13:00 WITA (05:00 UTC)
     - cron: '0 23,5 * * *'
-  workflow_dispatch: # Menyediakan tombol 'Run Manual'
+  workflow_dispatch:
 
 permissions:
-  contents: write # Memberikan izin push secara eksplisit
+  contents: write
 
 jobs:
   update-data:
@@ -24,7 +23,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4
+          pip install requests beautifulsoup4 urllib3
 
       - name: Run Script Scraper
         run: python main.py
