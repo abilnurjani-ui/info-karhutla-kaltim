@@ -1,11 +1,98 @@
 {
     "tanggal": "30 Juli 2026",
     "waktu": "12:00 WITA",
-    "status_wilayah": {
-        "sangat_rawan": "Paser, Penajam Paser Utara (PPU), Balikpapan, Kukar Selatan, Kutim Selatan.",
-        "waspada": "Kota Samarinda, Kukar Tengah.",
-        "aman": "Mahakam Ulu, Berau."
-    },
-    "ringkasan": "Berdasarkan pemantauan indikator FDRS BMKG terbaru, parameter FFMC (serasah permukaan) dan BUI (akumulasi bahan organik) di wilayah Kaltim bagian selatan dan pesisir berada pada kategori Sangat Mudah Terbakar. Waspadai potensi api cepat merambat akibat angin permukaan.",
-    "rekomendasi": "1. Dilarang keras membuka lahan dengan cara dibakar (Zero Burning Policy).\n2. Warga diimbau tidak membuang puntung rokok sembarangan di area bersemak kering.\n3. BPBD, Manggala Agni, dan Posko Karhutla di kawasan PPU, Paser, Balikpapan, dan Kukar disiagakan untuk patroli darat."
+    "tabel_wilayah": [
+        {
+            "nama": "Paser",
+            "lat": -1.8974,
+            "lon": 116.0975,
+            "status": "Sangat Rawan",
+            "ffmc": "Sangat Tinggi",
+            "dmc": "Sangat Tinggi",
+            "dc": "Tinggi",
+            "fwi": "Sangat Tinggi"
+        },
+        {
+            "nama": "Penajam Paser Utara",
+            "lat": -1.2588,
+            "lon": 116.5772,
+            "status": "Sangat Rawan",
+            "ffmc": "Sangat Tinggi",
+            "dmc": "Sangat Tinggi",
+            "dc": "Tinggi",
+            "fwi": "Sangat Tinggi"
+        },
+        {
+            "nama": "Balikpapan",
+            "lat": -1.2379,
+            "lon": 116.8529,
+            "status": "Sangat Rawan",
+            "ffmc": "Sangat Tinggi",
+            "dmc": "Tinggi",
+            "dc": "Sedang",
+            "fwi": "Sangat Tinggi"
+        },
+        {
+            "nama": "Kutai Kartanegara (Selatan)",
+            "lat": -0.4439,
+            "lon": 116.9813,
+            "status": "Sangat Rawan",
+            "ffmc": "Sangat Tinggi",
+            "dmc": "Sangat Tinggi",
+            "dc": "Sedang",
+            "fwi": "Tinggi"
+        },
+        {
+            "nama": "Kutai Timur (Selatan)",
+            "lat": 0.5387,
+            "lon": 117.5886,
+            "status": "Sangat Rawan",
+            "ffmc": "Sangat Tinggi",
+            "dmc": "Tinggi",
+            "dc": "Rendah",
+            "fwi": "Tinggi"
+        },
+        {
+            "nama": "Samarinda",
+            "lat": -0.5021,
+            "lon": 117.1536,
+            "status": "Waspada",
+            "ffmc": "Tinggi",
+            "dmc": "Tinggi",
+            "dc": "Rendah",
+            "fwi": "Sedang"
+        },
+        {
+            "nama": "Kutai Kartanegara (Tengah)",
+            "lat": -0.2186,
+            "lon": 116.4883,
+            "status": "Waspada",
+            "ffmc": "Tinggi",
+            "dmc": "Sedang",
+            "dc": "Rendah",
+            "fwi": "Sedang"
+        },
+        {
+            "nama": "Berau",
+            "lat": 2.1523,
+            "lon": 117.398,
+            "status": "Aman",
+            "ffmc": "Rendah",
+            "dmc": "Rendah",
+            "dc": "Rendah",
+            "fwi": "Rendah"
+        },
+        {
+            "nama": "Mahakam Ulu",
+            "lat": 0.6023,
+            "lon": 114.908,
+            "status": "Aman",
+            "ffmc": "Rendah",
+            "dmc": "Rendah",
+            "dc": "Rendah",
+            "fwi": "Rendah"
+        }
+    ],
+    "ringkasan": "Evaluasi parameter FDRS BMKG menunjukkan tingkat kemudahan terbakar serasah permukaan (FFMC) berstatus Sangat Tinggi dominan di wilayah Kaltim bagian selatan dan pesisir timur. Potensi laju penyebaran api sangat cepat.",
+    "rekomendasi": "1. Kesiapsiagaan penuh BPBD, Manggala Agni, dan Posko Karhutla di kawasan Paser, PPU, Balikpapan, dan Kukar.\n2. Penegakan larangan pembukaan lahan dengan cara dibakar.\n3. Patroli berkala pada jam rawan (12:00-16:00 WITA)."
 }
