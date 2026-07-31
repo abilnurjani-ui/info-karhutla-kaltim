@@ -1,6 +1,6 @@
 {
-    "tanggal": "30 Juli 2026",
-    "waktu": "15:53 WITA",
+    "tanggal": "31 Juli 2026",
+    "waktu": "17:34 WITA",
     "tabel_wilayah": [
         {
             "nama": "Paser",
@@ -94,8 +94,8 @@
         },
         {
             "nama": "Mahakam Ulu",
-            "lat": 0.4618,
-            "lon": 115.2011,
+            "lat": 0.6023,
+            "lon": 114.908,
             "status": "Aman",
             "ffmc": "Rendah (<80.0)",
             "dmc": "Rendah (<20.0)",
@@ -103,6 +103,6 @@
             "fwi": "Rendah (<2.0)"
         }
     ],
-    "ringkasan": "Update Real-time BMKG (30 Juli 2026 15:53 WITA): Dari 10 Kabupaten/Kota di Kaltim, terdeteksi 3 wilayah Sangat Rawan, 5 Waspada, dan 2 Aman. Kerawanan tinggi dominan di sektor selatan akibat tingginya parameter FFMC.",
+    "ringkasan": "Update Otomatis BMKG Kaltim (31 Juli 2026 17:34 WITA): Dari 10 Kabupaten/Kota, terdeteksi 3 wilayah Sangat Rawan, 5 Waspada, dan 2 Aman.",
     "rekomendasi": "1. Siagakan tim patroli darat Manggala Agni & BPBD di area zona merah (Paser, PPU, Balikpapan).\n2. Penegakan larangan Zero Burning untuk pembersihan lahan.\n3. Patroli berkala pada jam terik siang hari (12:00–16:00 WITA)."
 }
