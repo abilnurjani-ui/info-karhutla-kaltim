@@ -226,7 +226,7 @@
     <!-- Script Logika Frontend Terintegrasi Firebase Firestore (Module) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, query, orderBy, limit, documentId } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
         // Konfigurasi Firebase Web SDK
         const firebaseConfig = {
@@ -315,76 +315,75 @@
         document.getElementById('search-input').addEventListener('input', applyTableFilters);
         document.getElementById('filter-status').addEventListener('change', applyTableFilters);
 
-        // 3. Fetch Live Data dari Firebase Firestore Database (Client-Side Sorting - No Index Needed)
+        // 3. Fetch Live Data dari Firebase Firestore Database
         async function fetchLiveFirestoreData() {
             try {
-                // Ambil seluruh dokumen dari koleksi 'history' tanpa butuh index
-                const querySnapshot = await getDocs(collection(db, "history"));
+                // Menggunakan documentId() desc (Indeks Firestore sudah Aktif)
+                const q = query(collection(db, "history"), orderBy(documentId(), "desc"), limit(1));
+                const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
                     document.getElementById('update-waktu').innerText = "Belum Ada Data Firestore";
                     return;
                 }
 
-                // Urutkan ID dokumen (YYYY-MM-DD) secara menurun di sisi client
-                const docs = querySnapshot.docs.sort((a, b) => b.id.localeCompare(a.id));
-                const docSnap = docs[0]; // Dokumen paling baru
+                querySnapshot.forEach((docSnap) => {
+                    globalRawData = docSnap.data();
+                    const docId = docSnap.id; // Tanggal YYYY-MM-DD
 
-                globalRawData = docSnap.data();
-                const docId = docSnap.id; // Tanggal YYYY-MM-DD
+                    globalWilayahList = globalRawData.tabel_wilayah || [];
 
-                globalWilayahList = globalRawData.tabel_wilayah || [];
+                    // Set Teks UI
+                    const tgl = globalRawData.tanggal || docId;
+                    const wkt = globalRawData.waktu || globalRawData.last_updated || "WITA";
+                    document.getElementById('update-waktu').innerText = tgl + " (" + wkt + ")";
+                    document.getElementById('ringkasan-analisis').innerText = globalRawData.ringkasan || "Tidak ada ringkasan.";
+                    document.getElementById('rekomendasi-publik').innerText = globalRawData.rekomendasi || "Tidak ada rekomendasi.";
 
-                // Set Teks UI
-                const tgl = globalRawData.tanggal || docId;
-                const wkt = globalRawData.waktu || globalRawData.last_updated || "WITA";
-                document.getElementById('update-waktu').innerText = tgl + " (" + wkt + ")";
-                document.getElementById('ringkasan-analisis').innerText = globalRawData.ringkasan || "Tidak ada ringkasan.";
-                document.getElementById('rekomendasi-publik').innerText = globalRawData.rekomendasi || "Tidak ada rekomendasi.";
+                    // Render Tabel Data Wilayah
+                    renderTable(globalWilayahList);
 
-                // Render Tabel Data Wilayah
-                renderTable(globalWilayahList);
+                    // Render Peta Interaktif
+                    let statusCounts = { "Sangat Rawan": 0, "Waspada": 0, "Aman": 0 };
 
-                // Render Peta Interaktif
-                let statusCounts = { "Sangat Rawan": 0, "Waspada": 0, "Aman": 0 };
+                    globalWilayahList.forEach(item => {
+                        if (statusCounts[item.status] !== undefined) statusCounts[item.status]++;
 
-                globalWilayahList.forEach(item => {
-                    if (statusCounts[item.status] !== undefined) statusCounts[item.status]++;
+                        let colorHex = (item.status === 'Sangat Rawan') ? '#f43f5e' : (item.status === 'Waspada') ? '#f59e0b' : '#10b981';
+                        
+                        if (item.lat && item.lon) {
+                            const marker = L.marker([item.lat, item.lon], { icon: createCustomFireIcon(colorHex) }).addTo(map);
+                            marker.bindPopup(`
+                                <div class="p-1 font-sans text-slate-800">
+                                    <div class="text-base font-bold mb-1">${item.nama}</div>
+                                    <div class="mb-1"><b>Status:</b> ${item.status}</div>
+                                    <div class="mb-2 text-xs text-amber-700"><b>Iklim Hotspot:</b> ${item.kesesuaian_iklim || '-'}</div>
+                                </div>
+                            `);
+                        }
+                    });
 
-                    let colorHex = (item.status === 'Sangat Rawan') ? '#f43f5e' : (item.status === 'Waspada') ? '#f59e0b' : '#10b981';
-                    
-                    if (item.lat && item.lon) {
-                        const marker = L.marker([item.lat, item.lon], { icon: createCustomFireIcon(colorHex) }).addTo(map);
-                        marker.bindPopup(`
-                            <div class="p-1 font-sans text-slate-800">
-                                <div class="text-base font-bold mb-1">${item.nama}</div>
-                                <div class="mb-1"><b>Status:</b> ${item.status}</div>
-                                <div class="mb-2 text-xs text-amber-700"><b>Iklim Hotspot:</b> ${item.kesesuaian_iklim || '-'}</div>
-                            </div>
-                        `);
-                    }
+                    // Render Donut Chart (Proporsi Risiko)
+                    const ctx = document.getElementById('riskChart').getContext('2d');
+                    if (riskChartInstance) riskChartInstance.destroy();
+
+                    riskChartInstance = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Sangat Rawan', 'Waspada', 'Aman'],
+                            datasets: [{
+                                data: [statusCounts['Sangat Rawan'], statusCounts['Waspada'], statusCounts['Aman']],
+                                backgroundColor: ['#f43f5e', '#f59e0b', '#10b981'],
+                                borderWidth: 3, borderColor: '#ffffff'
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '68%' }
+                    });
+
+                    // Panggil Logika Load Tren 7 Hari
+                    const baseIso = globalRawData.iso_date || docId;
+                    load7DayFirestoreTrendChart(baseIso, statusCounts);
                 });
-
-                // Render Donut Chart (Proporsi Risiko)
-                const ctx = document.getElementById('riskChart').getContext('2d');
-                if (riskChartInstance) riskChartInstance.destroy();
-
-                riskChartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Sangat Rawan', 'Waspada', 'Aman'],
-                        datasets: [{
-                            data: [statusCounts['Sangat Rawan'], statusCounts['Waspada'], statusCounts['Aman']],
-                            backgroundColor: ['#f43f5e', '#f59e0b', '#10b981'],
-                            borderWidth: 3, borderColor: '#ffffff'
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '68%' }
-                });
-
-                // Panggil Logika Load Tren 7 Hari Langsung dari Firestore
-                const baseIso = globalRawData.iso_date || docId;
-                load7DayFirestoreTrendChart(baseIso, statusCounts);
 
             } catch (error) {
                 console.error("Gagal membaca dari Firestore:", error);
@@ -410,12 +409,10 @@
                 labels.push(displayLabel);
 
                 if (i === 0) {
-                    // Hari Ini (Data Live Firestore)
                     rawanData.push(currentCounts["Sangat Rawan"]);
                     waspadaData.push(currentCounts["Waspada"]);
                     amanData.push(currentCounts["Aman"]);
                 } else {
-                    // Coba Ambil Dokumen Histori dari Firestore
                     try {
                         const docRef = doc(db, "history", isoStr);
                         const docSnap = await getDoc(docRef);
