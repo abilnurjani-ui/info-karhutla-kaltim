@@ -51,7 +51,8 @@
                 <div class="flex items-center gap-3 sm:gap-4">
                     <!-- Container Logo Bulat Pas -->
                     <div class="bg-white p-1 rounded-full border border-slate-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                        <img src="./logo-mahakam-firewatch.png" 
+                        <img id="main-logo-img"
+                             src="./logo-mahakam-firewatch.png" 
                              alt="MAHAKAM FireWatch Logo" 
                              class="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-full" 
                              title="MAHAKAM FireWatch">
@@ -496,7 +497,7 @@
         document.getElementById('search-input').addEventListener('input', applyTableFilters);
         document.getElementById('filter-status').addEventListener('change', applyTableFilters);
 
-        // Handler Export PDF Resmi dengan Kop Kedinasan
+        // Handler Export PDF Resmi dengan Kop Kedinasan & Logo MAHAKAM FireWatch
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             if (!globalRawData) return;
             const { jsPDF } = window.jspdf;
@@ -510,19 +511,29 @@
             doc.setFillColor(245, 158, 11);
             doc.rect(0, 36, 210, 2, 'F');
 
-            // Teks Kop
+            // render Logo ke dalam Kop PDF
+            try {
+                const logoImg = document.getElementById('main-logo-img');
+                if (logoImg) {
+                    doc.addImage(logoImg, 'PNG', 12, 6, 24, 24);
+                }
+            } catch (err) {
+                console.warn("Logo tidak dapat disisipkan ke PDF:", err);
+            }
+
+            // Teks Kop Surat (Diberi offset X: 40mm agar tidak menimpa logo)
             doc.setTextColor(255, 255, 255); 
-            doc.setFontSize(14); 
+            doc.setFontSize(13); 
             doc.setFont("helvetica", "bold");
-            doc.text("KOMANDO POSKO KARHUTLA KALIMANTAN TIMUR", 14, 15);
+            doc.text("KOMANDO POSKO KARHUTLA KALIMANTAN TIMUR", 40, 15);
             
-            doc.setFontSize(11);
-            doc.text("Laporan Analisis Risiko Kebakaran Hutan & Lahan (FDRS)", 14, 22);
+            doc.setFontSize(10);
+            doc.text("MAHAKAM FireWatch - Laporan Analisis Risiko Karhutla (FDRS)", 40, 22);
 
             doc.setFontSize(8); 
             doc.setFont("helvetica", "normal");
             doc.setTextColor(203, 213, 225);
-            doc.text(`Tanggal Pembaruan: ${globalRawData.tanggal || '-'} (${globalRawData.waktu || 'WITA'}) | Sumber: Firestore Standard BMKG`, 14, 30);
+            doc.text(`Tanggal Pembaruan: ${globalRawData.tanggal || '-'} (${globalRawData.waktu || 'WITA'}) | Standar BMKG`, 40, 29);
 
             // Tabel Data Wilayah
             const tableRows = globalWilayahList.map(w => [
