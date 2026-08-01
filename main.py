@@ -17,16 +17,16 @@ current_time = now.strftime("%Y-%m-%d %H:%M:%S WITA")
 
 # Daftar 10 Wilayah Kalimantan Timur dengan Koordinat Base
 WILAYAH_KALTIM = [
-    {"kabupaten": "Paser", "lat": -1.88, "lng": 115.93},
-    {"kabupaten": "Kutai Barat", "lat": -0.23, "lng": 115.66},
-    {"kabupaten": "Kutai Kartanegara", "lat": -0.44, "lng": 116.98},
-    {"kabupaten": "Kutai Timur", "lat": 0.95, "lng": 117.58},
-    {"kabupaten": "Berau", "lat": 2.05, "lng": 117.35},
-    {"kabupaten": "Penajam Paser Utara", "lat": -1.28, "lng": 116.66},
-    {"kabupaten": "Mahakam Ulu", "lat": 0.58, "lng": 114.53},
-    {"kabupaten": "Balikpapan", "lat": -1.26, "lng": 116.83},
-    {"kabupaten": "Samarinda", "lat": -0.50, "lng": 117.15},
-    {"kabupaten": "Bontang", "lat": 0.13, "lng": 117.50}
+    {"kabupaten": "Paser", "lat": -1.910, "lng": 116.190},
+    {"kabupaten": "Kutai Barat", "lat": -0.236, "lng": 115.696},
+    {"kabupaten": "Kutai Kartanegara", "lat": -0.443, "lng": 116.998},
+    {"kabupaten": "Kutai Timur", "lat": 0.525, "lng": 117.608},
+    {"kabupaten": "Berau", "lat": 2.149, "lng": 117.507},
+    {"kabupaten": "Penajam Paser Utara", "lat": -1.310, "lng": 116.727},
+    {"kabupaten": "Mahakam Ulu", "lat": 0.461, "lng": 115.201},
+    {"kabupaten": "Balikpapan", "lat": -1.276, "lng": 116.827},
+    {"kabupaten": "Samarinda", "lat": -0.492, "lng": 117.145},
+    {"kabupaten": "Bontang", "lat": 0.069, "lng": 117.444}
 ]
 
 # ==========================================
