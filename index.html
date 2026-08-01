@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MAHAKAM FireWatch - Command Center Karhutla Kaltim</title>
 
     <!-- Tailwind CSS CDN -->
@@ -30,36 +30,36 @@
         .custom-fire-marker { background: transparent; border: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
     <!-- Header Command Center -->
     <header class="glass-header text-white border-b border-slate-700/50 shadow-xl relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 relative z-10">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+                    <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-3">
                         <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                         Real-Time FDRS & Climate Index (Firestore Live)
                     </div>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
-                        <svg class="w-9 h-9 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                    <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2 sm:gap-3">
+                        <svg class="w-7 h-7 sm:w-9 sm:h-9 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 23c-4.97 0-9-3.58-9-8 0-4.19 3.01-7.81 7.08-11.23.36-.3.88-.13.99.33.56 2.37 2.05 4.17 3.86 5.37 1.48 1 2.57 2.39 3.01 4.03.11.41.6.56.88.25.99-1.07 1.68-2.39 2.01-3.79.08-.34.52-.45.75-.2 2.11 2.3 3.41 5.17 3.41 8.24 0 4.42-4.03 8-9 8zm-1-8.5c0-.83-.67-1.5-1.5-1.5S8 13.67 8 14.5 8.67 16 9.5 16s1.5-.67 1.5-1.5z"/>
                         </svg>
                         MAHAKAM FireWatch
                     </h1>
-                    <p class="text-slate-300 font-medium text-base sm:text-lg mt-1">
+                    <p class="text-slate-300 font-medium text-xs sm:text-lg mt-1">
                         Monitoring & Analisis Hutan Kebakaran Kalimantan Timur
                     </p>
                 </div>
 
-                <div class="self-start md:self-center bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-4 shadow-inner min-w-[220px]">
-                    <div class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Status Pembaruan</div>
+                <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-3 sm:p-4 shadow-inner w-full md:w-auto">
+                    <div class="text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider mb-0.5 sm:mb-1">Status Pembaruan</div>
                     <div class="flex items-center gap-2">
-                        <span class="relative flex h-3 w-3">
+                        <span class="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-emerald-500"></span>
                         </span>
-                        <span class="text-sm font-bold text-emerald-400" id="update-waktu">Memuat dari Firestore...</span>
+                        <span class="text-xs sm:text-sm font-bold text-emerald-400" id="update-waktu">Memuat dari Firestore...</span>
                     </div>
                 </div>
             </div>
@@ -67,55 +67,54 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow space-y-8">
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow space-y-4 sm:space-y-8 w-full">
 
         <!-- Legend Bar -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-2 text-sm font-bold text-slate-700">
-                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 Kategori Risiko FDRS & Iklim:
             </div>
-            <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Aman
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold w-full sm:w-auto justify-between sm:justify-start">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Aman
                 </span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Waspada
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span> Waspada
                 </span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
-                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span> Sangat Rawan
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
+                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span> Sangat Rawan
                 </span>
             </div>
         </div>
 
         <!-- Section Visualisasi Utama: Peta + Donut Chart -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <section class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
-                <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900">Peta Interaktif Sebaran Risiko Karhutla</h2>
-                        <p class="text-xs text-slate-500 mt-0.5">Gunakan kontrol di pojok kanan atas peta untuk mengganti ke Citra Satelit Esri.</p>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <section class="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+                <div class="p-3.5 sm:p-5 border-b border-slate-100">
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Peta Interaktif Sebaran Risiko Karhutla</h2>
+                    <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Kontrol di pojok kanan atas peta untuk ganti opsi Citra Satelit.</p>
                 </div>
-                <div class="p-2 flex-grow">
-                    <div id="map" class="h-[420px] w-full rounded-xl z-0"></div>
+                <div class="p-1.5 sm:p-2 flex-grow">
+                    <!-- RESPONSIVE MAP HEIGHT -->
+                    <div id="map" class="h-[280px] sm:h-[420px] w-full rounded-lg sm:rounded-xl z-0"></div>
                 </div>
             </section>
 
-            <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col justify-between">
+            <section class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200/80 p-4 sm:p-5 flex flex-col justify-between">
                 <div>
-                    <div class="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-wider mb-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-1.5 text-blue-600 font-bold text-[10px] sm:text-xs uppercase tracking-wider mb-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
                         </svg>
                         Proporsi Wilayah
                     </div>
-                    <h2 class="text-lg font-bold text-slate-900 mb-1">Distribusi Risiko Karhutla</h2>
-                    <p class="text-xs text-slate-500 mb-4">Persentase tingkat kerawanan saat ini.</p>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 mb-0.5">Distribusi Risiko Karhutla</h2>
+                    <p class="text-[11px] sm:text-xs text-slate-500 mb-3">Persentase tingkat kerawanan saat ini.</p>
                     
-                    <div class="relative flex items-center justify-center h-[260px]">
+                    <div class="relative flex items-center justify-center h-[200px] sm:h-[260px]">
                         <canvas id="riskChart"></canvas>
                     </div>
                 </div>
@@ -123,77 +122,77 @@
         </div>
 
         <!-- Section Grafik Tren 7 Hari Terakhir -->
-        <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+        <section class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 sm:mb-6">
                 <div>
-                    <div class="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider mb-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-1.5 text-amber-600 font-bold text-[10px] sm:text-xs uppercase tracking-wider mb-0.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
                         </svg>
                         Analisis Histori (Time-Series)
                     </div>
-                    <h2 class="text-xl font-bold text-slate-900">Tren Sebaran Risiko 7 Hari Terakhir</h2>
+                    <h2 class="text-base sm:text-xl font-bold text-slate-900">Tren Sebaran Risiko 7 Hari Terakhir</h2>
                 </div>
-                <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold">
+                <span class="self-start sm:self-auto text-[10px] sm:text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200 font-semibold">
                     ⚡ Real-time Sync Firebase Firestore
                 </span>
             </div>
             
-            <div class="h-[280px] w-full">
+            <div class="h-[220px] sm:h-[280px] w-full">
                 <canvas id="trendChart"></canvas>
             </div>
         </section>
 
         <!-- Section Tabel Data -->
-        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <section class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900">Tabel Integrasi Parameter FDRS & Kesesuaian Iklim</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Cari, filter, atau unduh laporan data wilayah di bawah ini.</p>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Tabel Parameter FDRS & Kesesuaian Iklim</h2>
+                    <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Filter atau unduh laporan wilayah di bawah ini.</p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2.5">
-                    <div class="relative flex-1 sm:w-48">
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="relative flex-1 min-w-[140px] sm:w-48">
                         <input type="text" id="search-input" placeholder="Cari wilayah..." 
                             class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
 
-                    <select id="filter-status" class="py-1.5 px-3 text-xs rounded-xl border border-slate-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="filter-status" class="py-1.5 px-2.5 text-xs rounded-xl border border-slate-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="ALL">Semua Status</option>
                         <option value="Sangat Rawan">Sangat Rawan</option>
                         <option value="Waspada">Waspada</option>
                         <option value="Aman">Aman</option>
                     </select>
 
-                    <button id="btn-export-csv" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
+                    <button id="btn-export-csv" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
                         CSV
                     </button>
 
-                    <button id="btn-export-pdf" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm">
-                        Laporan PDF
+                    <button id="btn-export-pdf" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm">
+                        PDF
                     </button>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm" id="data-table">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm min-w-[600px]" id="data-table">
                     <thead>
-                        <tr class="bg-slate-50/80 border-b border-slate-200/80 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                            <th class="px-6 py-4">Kabupaten / Kota</th>
-                            <th class="px-6 py-4 text-center">Tingkat Risiko</th>
-                            <th class="px-6 py-4 text-center">Kesesuaian Iklim Hotspot</th>
-                            <th class="px-6 py-4 text-center">FFMC</th>
-                            <th class="px-6 py-4 text-center">DMC</th>
-                            <th class="px-6 py-4 text-center">DC</th>
-                            <th class="px-6 py-4 text-center">FWI</th>
+                        <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                            <th class="px-4 sm:px-6 py-3 sm:py-4">Kabupaten / Kota</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">Tingkat Risiko</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">Kesesuaian Iklim</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">FFMC</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">DMC</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">DC</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">FWI</th>
                         </tr>
                     </thead>
                     <tbody id="tabel-body" class="divide-y divide-slate-100 font-medium">
                         <tr>
-                            <td colspan="7" class="text-center py-8 text-slate-400 font-normal">Memuat data dari Firebase Firestore...</td>
+                            <td colspan="7" class="text-center py-6 text-slate-400 font-normal">Memuat data dari Firebase Firestore...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -201,17 +200,17 @@
         </section>
 
         <!-- Section Analisis Teks & Rekomendasi -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
-                <h2 class="text-xl font-bold text-slate-900 mb-4">Analisis Spasial Meteorologi & Iklim</h2>
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 text-slate-700 leading-relaxed text-sm" id="ringkasan-analisis">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <section class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80">
+                <h2 class="text-base sm:text-xl font-bold text-slate-900 mb-3">Analisis Spasial Meteorologi & Iklim</h2>
+                <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-100 text-slate-700 leading-relaxed text-xs sm:text-sm" id="ringkasan-analisis">
                     Memuat narasi analisis...
                 </div>
             </section>
 
-            <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
-                <h2 class="text-xl font-bold text-slate-900 mb-4">Rekomendasi Operasional</h2>
-                <div class="p-4 rounded-xl bg-amber-50/50 border border-amber-100 text-slate-700 leading-relaxed text-sm whitespace-pre-line font-medium" id="rekomendasi-publik">
+            <section class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80">
+                <h2 class="text-base sm:text-xl font-bold text-slate-900 mb-3">Rekomendasi Operasional</h2>
+                <div class="p-3.5 sm:p-4 rounded-xl bg-amber-50/50 border border-amber-100 text-slate-700 leading-relaxed text-xs sm:text-sm whitespace-pre-line font-medium" id="rekomendasi-publik">
                     Memuat instruksi operasional...
                 </div>
             </section>
@@ -219,11 +218,11 @@
 
     </main>
 
-    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-12 py-6 text-center text-xs">
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-8 sm:mt-12 py-5 text-center text-[10px] sm:text-xs">
         <p>© 2026 MAHAKAM FireWatch — Powered by Google Firebase Firestore</p>
     </footer>
 
-    <!-- Script Logika Frontend Terintegrasi Firebase Firestore (Module) -->
+    <!-- Script Logika Frontend -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
         import { getFirestore, collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
@@ -245,23 +244,31 @@
         let riskChartInstance = null;
         let trendChartInstance = null;
 
-        // Leaflet Map Init
+        // Leaflet Map Init (Responsif Touch)
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap | BMKG' });
         const esriSatLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Tiles © Esri' });
 
-        const map = L.map('map', { zoomControl: true, scrollWheelZoom: false, layers: [osmLayer] }).setView([-0.4948, 117.1436], 7);
-        L.control.layers({ "Peta Jalan (OSM)": osmLayer, "Satelit (Esri)": esriSatLayer }, null, { position: 'topright' }).addTo(map);
+        const isMobile = window.innerWidth < 640;
+        const map = L.map('map', { 
+            zoomControl: true, 
+            scrollWheelZoom: false,
+            dragging: !L.Browser.mobile, // Mencegah layar HP terkunci saat di-scroll
+            tap: !L.Browser.mobile,
+            layers: [osmLayer] 
+        }).setView([-0.4948, 117.1436], isMobile ? 6 : 7);
+
+        L.control.layers({ "Peta Jalan": osmLayer, "Satelit": esriSatLayer }, null, { position: 'topright' }).addTo(map);
 
         function createCustomFireIcon(colorHex) {
             const svgHtml = `
-                <div class="relative flex items-center justify-center w-8 h-8">
+                <div class="relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-40" style="background-color: ${colorHex};"></span>
-                    <svg class="w-8 h-8 drop-shadow-md relative z-10" fill="${colorHex}" viewBox="0 0 24 24">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md relative z-10" fill="${colorHex}" viewBox="0 0 24 24">
                         <path d="M12 23c-4.97 0-9-3.58-9-8 0-4.19 3.01-7.81 7.08-11.23.36-.3.88-.13.99.33.56 2.37 2.05 4.17 3.86 5.37 1.48 1 2.57 2.39 3.01 4.03.11.41.6.56.88.25.99-1.07 1.68-2.39 2.01-3.79.08-.34.52-.45.75-.2 2.11 2.3 3.41 5.17 3.41 8.24 0 4.42-4.03 8-9 8zm-1-8.5c0-.83-.67-1.5-1.5-1.5S8 13.67 8 14.5 8.67 16 9.5 16s1.5-.67 1.5-1.5z"/>
                     </svg>
                 </div>
             `;
-            return L.divIcon({ html: svgHtml, className: 'custom-fire-marker', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
+            return L.divIcon({ html: svgHtml, className: 'custom-fire-marker', iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -28] });
         }
 
         function normalizeStatus(statusRaw) {
@@ -288,17 +295,17 @@
 
                 const row = `
                     <tr class="hover:bg-slate-50/80 transition-colors">
-                        <td class="px-6 py-4 font-bold text-slate-900">${item.nama || item.kabupaten || item.kota || '-'}</td>
-                        <td class="px-6 py-4 text-center">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold border inline-block ${badgeClass}">
+                        <td class="px-4 sm:px-6 py-3 sm:py-4 font-bold text-slate-900">${item.nama || item.kabupaten || item.kota || '-'}</td>
+                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center">
+                            <span class="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold border inline-block ${badgeClass}">
                                 ${normStatus}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-center font-semibold text-slate-700">${item.kesesuaian_iklim || '-'}</td>
-                        <td class="px-6 py-4 text-center text-slate-600">${item.ffmc ?? '-'}</td>
-                        <td class="px-6 py-4 text-center text-slate-600">${item.dmc ?? '-'}</td>
-                        <td class="px-6 py-4 text-center text-slate-600">${item.dc ?? '-'}</td>
-                        <td class="px-6 py-4 text-center text-slate-700 font-bold">${item.fwi ?? '-'}</td>
+                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold text-slate-700">${item.kesesuaian_iklim || '-'}</td>
+                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-600">${item.ffmc ?? '-'}</td>
+                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-600">${item.dmc ?? '-'}</td>
+                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-600">${item.dc ?? '-'}</td>
+                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-700 font-bold">${item.fwi ?? '-'}</td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
@@ -322,7 +329,6 @@
         document.getElementById('search-input').addEventListener('input', applyTableFilters);
         document.getElementById('filter-status').addEventListener('change', applyTableFilters);
 
-        // Fetch Live Firestore Data
         async function fetchLiveFirestoreData() {
             try {
                 const querySnapshot = await getDocs(collection(db, "history"));
@@ -332,39 +338,27 @@
                     return;
                 }
 
-                // Urutkan dokumen dari tanggal terbaru ke terlama
                 const docs = querySnapshot.docs.sort((a, b) => b.id.localeCompare(a.id));
 
-                // ⚡ AUTO-FILTER: Cari dokumen pertama yang MEMILIKI ISI DATA WILAYAH
                 let targetDoc = docs.find(d => {
                     const data = d.data();
                     const list = data.tabel_wilayah || data.wilayah || data.data || data.kabupaten;
                     return list && list.length > 0;
-                });
-
-                // Jika semua dokumen belum punya data wilayah, gunakan dokumen pertama sebagai fallback
-                if (!targetDoc) {
-                    targetDoc = docs[0];
-                }
+                }) || docs[0];
 
                 globalRawData = targetDoc.data();
                 const docId = targetDoc.id;
 
-                console.log("🔥 Dokumen Lengkap Yang Dipilih:", docId, globalRawData);
-
                 globalWilayahList = globalRawData.tabel_wilayah || globalRawData.wilayah || globalRawData.data || globalRawData.kabupaten || [];
 
-                // Set Teks UI
                 const tgl = globalRawData.tanggal || docId;
                 const wkt = globalRawData.waktu || globalRawData.last_updated || "WITA";
                 document.getElementById('update-waktu').innerText = tgl + " (" + wkt + ")";
                 document.getElementById('ringkasan-analisis').innerText = globalRawData.ringkasan || globalRawData.analisis || "Tidak ada ringkasan.";
                 document.getElementById('rekomendasi-publik').innerText = globalRawData.rekomendasi || "Tidak ada rekomendasi.";
 
-                // Render Tabel
                 renderTable(globalWilayahList);
 
-                // Render Peta & Hitung Status
                 let statusCounts = { "Sangat Rawan": 0, "Waspada": 0, "Aman": 0 };
 
                 globalWilayahList.forEach(item => {
@@ -380,15 +374,14 @@
                         const marker = L.marker([lat, lon], { icon: createCustomFireIcon(colorHex) }).addTo(map);
                         marker.bindPopup(`
                             <div class="p-1 font-sans text-slate-800">
-                                <div class="text-base font-bold mb-1">${item.nama || item.kabupaten || item.kota}</div>
-                                <div class="mb-1"><b>Status:</b> ${normStatus}</div>
-                                <div class="mb-2 text-xs text-amber-700"><b>Iklim Hotspot:</b> ${item.kesesuaian_iklim || '-'}</div>
+                                <div class="text-sm font-bold mb-1">${item.nama || item.kabupaten || item.kota}</div>
+                                <div class="mb-1 text-xs"><b>Status:</b> ${normStatus}</div>
+                                <div class="mb-1 text-xs text-amber-700"><b>Iklim Hotspot:</b> ${item.kesesuaian_iklim || '-'}</div>
                             </div>
                         `);
                     }
                 });
 
-                // Render Donut Chart
                 const ctx = document.getElementById('riskChart').getContext('2d');
                 if (riskChartInstance) riskChartInstance.destroy();
 
@@ -399,13 +392,12 @@
                         datasets: [{
                             data: [statusCounts['Sangat Rawan'], statusCounts['Waspada'], statusCounts['Aman']],
                             backgroundColor: ['#f43f5e', '#f59e0b', '#10b981'],
-                            borderWidth: 3, borderColor: '#ffffff'
+                            borderWidth: 2, borderColor: '#ffffff'
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '68%' }
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
                 });
 
-                // Load Tren 7 Hari
                 const baseIso = globalRawData.iso_date || docId;
                 load7DayFirestoreTrendChart(baseIso, statusCounts);
 
@@ -415,7 +407,6 @@
             }
         }
 
-        // Load History 7 Hari
         async function load7DayFirestoreTrendChart(todayIso, currentCounts) {
             const labels = [];
             const rawanData = [];
@@ -480,7 +471,7 @@
                             data: rawanData,
                             borderColor: '#f43f5e',
                             backgroundColor: 'rgba(244, 63, 94, 0.1)',
-                            borderWidth: 3,
+                            borderWidth: 2,
                             tension: 0.3,
                             fill: true,
                             spanGaps: true
@@ -509,50 +500,21 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top', labels: { font: { family: 'Plus Jakarta Sans', weight: '600' } } }
+                        legend: { position: 'top', labels: { font: { family: 'Plus Jakarta Sans', size: 10, weight: '600' } } }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             max: 10,
-                            ticks: { stepSize: 1 }
+                            ticks: { stepSize: 2, font: { size: 10 } }
+                        },
+                        x: {
+                            ticks: { font: { size: 10 } }
                         }
                     }
                 }
             });
         }
-
-        // Export Handlers
-        document.getElementById('btn-export-csv').addEventListener('click', () => {
-            if (!globalWilayahList.length) return;
-            let csvContent = "data:text/csv;charset=utf-8,Kabupaten/Kota,Status Risiko,Kesesuaian Iklim Hotspot,FFMC,DMC,DC,FWI\n";
-            globalWilayahList.forEach(i => { 
-                csvContent += `"${i.nama || i.kabupaten}","${normalizeStatus(i.status)}","${i.kesesuaian_iklim || ''}","${i.ffmc ?? ''}","${i.dmc ?? ''}","${i.dc ?? ''}","${i.fwi ?? ''}"\n`; 
-            });
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `MAHAKAM_FireWatch_${(globalRawData.tanggal || 'data').replace(/ /g, "_")}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        });
-
-        document.getElementById('btn-export-pdf').addEventListener('click', () => {
-            if (!globalRawData) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 32, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(15); doc.setFont("helvetica", "bold");
-            doc.text("MAHAKAM FireWatch - Laporan Resmi Karhutla", 14, 15);
-            doc.setFontSize(8.5); doc.setFont("helvetica", "normal");
-            doc.text(`Waktu Pembaruan: ${globalRawData.tanggal || ''} (${globalRawData.waktu || ''})`, 14, 26);
-
-            const tableRows = globalWilayahList.map(w => [w.nama || w.kabupaten, normalizeStatus(w.status), w.kesesuaian_iklim || '-', w.ffmc ?? '-', w.dmc ?? '-', w.dc ?? '-', w.fwi ?? '-']);
-            doc.autoTable({
-                startY: 38, head: [['Kab/Kota', 'Status Risiko', 'Kesesuaian Iklim', 'FFMC', 'DMC', 'DC', 'FWI']],
-                body: tableRows, theme: 'striped',
-                headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255] }
-            });
-            doc.save(`Laporan_MAHAKAM_FireWatch_${(globalRawData.tanggal || 'data').replace(/ /g, "_")}.pdf`);
-        });
 
         fetchLiveFirestoreData();
     </script>
