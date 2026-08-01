@@ -1,0 +1,119 @@
+{
+    "iso_date": "2026-07-31",
+    "tanggal": "31 Juli 2026",
+    "waktu": "14:00 WITA",
+    "ringkasan": "Update Integrasi BMKG Cuaca & Iklim (31 Juli 2026 14:00 WITA): Dari 10 wilayah Kaltim, terdeteksi 5 wilayah berstatus 'Sangat Rawan' dengan Indeks Iklim 'Sangat Sesuai' untuk potensi kemunculan titik panas, 2 Waspada, dan 3 Aman. Konsentrasi risiko tertinggi berada di wilayah: Balikpapan, Samarinda, Kutai Kartanegara.",
+    "rekomendasi": "1. Tingkatkan kesiapsaandaraan pada 5 wilayah berstatus Sangat Rawan (Balikpapan, Samarinda, Kutai Kartanegara).\n2. Intensifkan patroli darat Manggala Agni & BPBD serta pantau perkembangan titik panas via Satelit TERRA/AQUA.\n3. Terapkan pemantauan ketat larangan pembukaan lahan berbasis pembakaran (Zero Burning).",
+    "tabel_wilayah": [
+        {
+            "nama": "Paser",
+            "lat": -1.8974,
+            "lon": 116.0975,
+            "status": "Aman",
+            "kesesuaian_iklim": "Kurang Sesuai (Rendah)",
+            "ffmc": "Rendah (65.6)",
+            "dmc": "Rendah (8.5)",
+            "dc": "Rendah (81)",
+            "fwi": "Rendah (0.3)"
+        },
+        {
+            "nama": "Penajam Paser Utara",
+            "lat": -1.2588,
+            "lon": 116.5772,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (88.9)",
+            "dmc": "Sedang (38.7)",
+            "dc": "Rendah (102)",
+            "fwi": "Sedang (9.3)"
+        },
+        {
+            "nama": "Balikpapan",
+            "lat": -1.2379,
+            "lon": 116.8529,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (94.5)",
+            "dmc": "Sangat Tinggi (75.2)",
+            "dc": "Tinggi (323)",
+            "fwi": "Sangat Tinggi (37.7)"
+        },
+        {
+            "nama": "Samarinda",
+            "lat": -0.5021,
+            "lon": 117.1536,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (95.1)",
+            "dmc": "Sangat Tinggi (84.7)",
+            "dc": "Tinggi (365)",
+            "fwi": "Sangat Tinggi (34.3)"
+        },
+        {
+            "nama": "Kutai Kartanegara",
+            "lat": -0.4439,
+            "lon": 116.9813,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (94.6)",
+            "dmc": "Sangat Tinggi (83.0)",
+            "dc": "Tinggi (408)",
+            "fwi": "Sangat Tinggi (40.9)"
+        },
+        {
+            "nama": "Bontang",
+            "lat": 0.1333,
+            "lon": 117.5,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (88.0)",
+            "dmc": "Sedang (30.8)",
+            "dc": "Rendah (174)",
+            "fwi": "Sedang (4.9)"
+        },
+        {
+            "nama": "Kutai Timur",
+            "lat": 0.5387,
+            "lon": 117.5886,
+            "status": "Aman",
+            "kesesuaian_iklim": "Kurang Sesuai (Rendah)",
+            "ffmc": "Rendah (62.3)",
+            "dmc": "Rendah (5.7)",
+            "dc": "Rendah (145)",
+            "fwi": "Rendah (1.0)"
+        },
+        {
+            "nama": "Kutai Barat",
+            "lat": -0.2311,
+            "lon": 115.698,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (94.5)",
+            "dmc": "Sangat Tinggi (80.6)",
+            "dc": "Tinggi (376)",
+            "fwi": "Sangat Tinggi (30.1)"
+        },
+        {
+            "nama": "Berau",
+            "lat": 2.1523,
+            "lon": 117.398,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (91.9)",
+            "dmc": "Sangat Tinggi (67.3)",
+            "dc": "Tinggi (382)",
+            "fwi": "Sangat Tinggi (38.5)"
+        },
+        {
+            "nama": "Mahakam Ulu",
+            "lat": 0.6023,
+            "lon": 114.908,
+            "status": "Aman",
+            "kesesuaian_iklim": "Kurang Sesuai (Rendah)",
+            "ffmc": "Rendah (79.0)",
+            "dmc": "Rendah (10.2)",
+            "dc": "Rendah (73)",
+            "fwi": "Rendah (1.8)"
+        }
+    ]
+}

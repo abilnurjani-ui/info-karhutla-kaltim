@@ -1,0 +1,119 @@
+{
+    "iso_date": "2026-07-29",
+    "tanggal": "29 Juli 2026",
+    "waktu": "14:00 WITA",
+    "ringkasan": "Update Integrasi BMKG Cuaca & Iklim (29 Juli 2026 14:00 WITA): Dari 10 wilayah Kaltim, terdeteksi 3 wilayah berstatus 'Sangat Rawan' dengan Indeks Iklim 'Sangat Sesuai' untuk potensi kemunculan titik panas, 6 Waspada, dan 1 Aman. Konsentrasi risiko tertinggi berada di wilayah: Paser, Balikpapan, Berau.",
+    "rekomendasi": "1. Tingkatkan kesiapsaandaraan pada 3 wilayah berstatus Sangat Rawan (Paser, Balikpapan, Berau).\n2. Intensifkan patroli darat Manggala Agni & BPBD serta pantau perkembangan titik panas via Satelit TERRA/AQUA.\n3. Terapkan pemantauan ketat larangan pembukaan lahan berbasis pembakaran (Zero Burning).",
+    "tabel_wilayah": [
+        {
+            "nama": "Paser",
+            "lat": -1.8974,
+            "lon": 116.0975,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (94.2)",
+            "dmc": "Sangat Tinggi (69.6)",
+            "dc": "Tinggi (352)",
+            "fwi": "Sangat Tinggi (32.1)"
+        },
+        {
+            "nama": "Penajam Paser Utara",
+            "lat": -1.2588,
+            "lon": 116.5772,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (88.2)",
+            "dmc": "Sedang (24.5)",
+            "dc": "Rendah (199)",
+            "fwi": "Sedang (7.7)"
+        },
+        {
+            "nama": "Balikpapan",
+            "lat": -1.2379,
+            "lon": 116.8529,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (92.8)",
+            "dmc": "Sangat Tinggi (68.2)",
+            "dc": "Tinggi (389)",
+            "fwi": "Sangat Tinggi (31.0)"
+        },
+        {
+            "nama": "Samarinda",
+            "lat": -0.5021,
+            "lon": 117.1536,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (90.2)",
+            "dmc": "Sedang (35.2)",
+            "dc": "Rendah (112)",
+            "fwi": "Sedang (6.5)"
+        },
+        {
+            "nama": "Kutai Kartanegara",
+            "lat": -0.4439,
+            "lon": 116.9813,
+            "status": "Aman",
+            "kesesuaian_iklim": "Kurang Sesuai (Rendah)",
+            "ffmc": "Rendah (79.0)",
+            "dmc": "Rendah (12.1)",
+            "dc": "Rendah (145)",
+            "fwi": "Rendah (1.0)"
+        },
+        {
+            "nama": "Bontang",
+            "lat": 0.1333,
+            "lon": 117.5,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (89.2)",
+            "dmc": "Sedang (25.0)",
+            "dc": "Rendah (173)",
+            "fwi": "Sedang (12.7)"
+        },
+        {
+            "nama": "Kutai Timur",
+            "lat": 0.5387,
+            "lon": 117.5886,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (91.4)",
+            "dmc": "Sedang (37.7)",
+            "dc": "Rendah (170)",
+            "fwi": "Sedang (8.8)"
+        },
+        {
+            "nama": "Kutai Barat",
+            "lat": -0.2311,
+            "lon": 115.698,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (90.9)",
+            "dmc": "Sedang (22.3)",
+            "dc": "Rendah (160)",
+            "fwi": "Sedang (2.6)"
+        },
+        {
+            "nama": "Berau",
+            "lat": 2.1523,
+            "lon": 117.398,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (95.0)",
+            "dmc": "Sangat Tinggi (81.9)",
+            "dc": "Tinggi (343)",
+            "fwi": "Sangat Tinggi (41.7)"
+        },
+        {
+            "nama": "Mahakam Ulu",
+            "lat": 0.6023,
+            "lon": 114.908,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (90.6)",
+            "dmc": "Sedang (25.7)",
+            "dc": "Rendah (156)",
+            "fwi": "Sedang (8.0)"
+        }
+    ]
+}
