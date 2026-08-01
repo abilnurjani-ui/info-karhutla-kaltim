@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAHAKAM FireWatch - Command Center Karhutla Kaltim</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>MAHAKAM FireWatch — Monitoring & Analisis Karhutla Kaltim</title>
+    <meta name="title" content="MAHAKAM FireWatch — Monitoring & Analisis Karhutla Kaltim">
+    <meta name="description" content="Portal Pemantauan Risiko Karhutla Real-Time 10 Kabupaten/Kota Kalimantan Timur Berbasis Data BMKG.">
+    <meta name="keywords" content="Karhutla, Kaltim, BMKG, FDRS, Kebakaran Hutan, Samarinda, Balikpapan, Paser">
+    <meta name="author" content="MAHAKAM FireWatch Team">
+
+    <!-- Embedded Favicon SVG (Logo Api Tab Browser) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f59e0b'%3E%3Cpath d='M12 23c-4.97 0-9-3.58-9-8 0-4.19 3.01-7.81 7.08-11.23.36-.3.88-.13.99.33.56 2.37 2.05 4.17 3.86 5.37 1.48 1 2.57 2.39 3.01 4.03.11.41.6.56.88.25.99-1.07 1.68-2.39 2.01-3.79.08-.34.52-.45.75-.2 2.11 2.3 3.41 5.17 3.41 8.24 0 4.42-4.03 8-9 8zm-1-8.5c0-.83-.67-1.5-1.5-1.5S8 13.67 8 14.5 8.67 16 9.5 16s1.5-.67 1.5-1.5z'/%3E%3C/svg%3E">
+
+    <!-- Open Graph / Facebook / WhatsApp Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://info-karhutla-kaltim.vercel.app/">
+    <meta property="og:title" content="MAHAKAM FireWatch — Monitoring Karhutla Kaltim">
+    <meta property="og:description" content="Portal Pemantauan Risiko Karhutla Real-Time 10 Kabupaten/Kota Kalimantan Timur Berbasis Data BMKG.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?auto=format&fit=crop&w=1200&q=80">
+
+    <!-- Twitter / X Card Preview -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://info-karhutla-kaltim.vercel.app/">
+    <meta property="twitter:title" content="MAHAKAM FireWatch — Monitoring Karhutla Kaltim">
+    <meta property="twitter:description" content="Portal Pemantauan Risiko Karhutla Real-Time 10 Kabupaten/Kota Kalimantan Timur Berbasis Data BMKG.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?auto=format&fit=crop&w=1200&q=80">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,7 +43,7 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- jsPDF & AutoTable CDN (Untuk Export PDF) -->
+    <!-- jsPDF & AutoTable CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
@@ -131,16 +154,13 @@
 
         <!-- Section Tabel Data dengan Toolbar Filter & Export -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <!-- Header & Toolbar Actions -->
             <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900">Tabel Integrasi Parameter FDRS & Kesesuaian Iklim</h2>
                     <p class="text-xs text-slate-500 mt-0.5">Cari, filter, atau unduh laporan data wilayah di bawah ini.</p>
                 </div>
 
-                <!-- Action Controls: Search, Filter, Export Buttons -->
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <!-- Input Search -->
                     <div class="relative flex-1 sm:w-48">
                         <input type="text" id="search-input" placeholder="Cari wilayah..." 
                             class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -149,7 +169,6 @@
                         </svg>
                     </div>
 
-                    <!-- Dropdown Filter Status -->
                     <select id="filter-status" class="py-1.5 px-3 text-xs rounded-xl border border-slate-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="ALL">Semua Status</option>
                         <option value="Sangat Rawan">Sangat Rawan</option>
@@ -157,7 +176,6 @@
                         <option value="Aman">Aman</option>
                     </select>
 
-                    <!-- Tombol Export CSV -->
                     <button id="btn-export-csv" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
                         <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -165,7 +183,6 @@
                         CSV
                     </button>
 
-                    <!-- Tombol Export PDF -->
                     <button id="btn-export-pdf" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
@@ -175,7 +192,6 @@
                 </div>
             </div>
 
-            <!-- Tabel Data -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm" id="data-table">
                     <thead>
@@ -223,22 +239,14 @@
 
     <!-- Script Logika Frontend -->
     <script>
-        // Store Global Data
         let globalRawData = null;
         let globalWilayahList = [];
 
         // 1. Inisialisasi Peta
-        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18, attribution: '© OpenStreetMap | BMKG'
-        });
-        const esriSatLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18, attribution: 'Tiles © Esri'
-        });
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap | BMKG' });
+        const esriSatLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Tiles © Esri' });
 
-        const map = L.map('map', {
-            zoomControl: true, scrollWheelZoom: false, layers: [osmLayer]
-        }).setView([-0.4948, 117.1436], 7);
-
+        const map = L.map('map', { zoomControl: true, scrollWheelZoom: false, layers: [osmLayer] }).setView([-0.4948, 117.1436], 7);
         L.control.layers({ "Peta Jalan (OSM)": osmLayer, "Satelit (Esri)": esriSatLayer }, null, { position: 'topright' }).addTo(map);
 
         // 2. Custom Fire Marker
@@ -256,7 +264,7 @@
 
         let riskChartInstance = null;
 
-        // 3. Render Tabel dengan Filter
+        // 3. Render Tabel Filter
         function renderTable(listData) {
             const tableBody = document.getElementById('tabel-body');
             tableBody.innerHTML = '';
@@ -267,10 +275,8 @@
             }
 
             listData.forEach(item => {
-                let badgeClass = '';
-                if (item.status === 'Sangat Rawan') badgeClass = 'bg-rose-100 text-rose-800 border-rose-200';
-                else if (item.status === 'Waspada') badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
-                else badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                let badgeClass = (item.status === 'Sangat Rawan') ? 'bg-rose-100 text-rose-800 border-rose-200' : 
+                                 (item.status === 'Waspada') ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200';
 
                 const row = `
                     <tr class="hover:bg-slate-50/80 transition-colors">
@@ -291,7 +297,7 @@
             });
         }
 
-        // 4. Logika Filter & Search
+        // 4. Logika Filter
         function applyTableFilters() {
             const query = document.getElementById('search-input').value.toLowerCase();
             const statusFilter = document.getElementById('filter-status').value;
@@ -342,7 +348,6 @@
                     `);
                 });
 
-                // Render Chart.js
                 const ctx = document.getElementById('riskChart').getContext('2d');
                 if (riskChartInstance) riskChartInstance.destroy();
 
@@ -387,15 +392,14 @@
             document.body.removeChild(link);
         });
 
-        // 7. Export to PDF Logic (jsPDF + AutoTable)
+        // 7. Export to PDF Logic
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             if (!globalRawData) return;
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
 
-            // Header Dokumen
-            doc.setFillColor(15, 23, 42); // Dark Slate Header
+            doc.setFillColor(15, 23, 42);
             doc.rect(0, 0, 210, 32, 'F');
 
             doc.setTextColor(255, 255, 255);
@@ -408,7 +412,6 @@
             doc.text("Sistem Pemantauan Risiko Karhutla Real-Time Kalimantan Timur (BMKG)", 14, 22);
             doc.text(`Update Data: ${globalRawData.tanggal} (${globalRawData.waktu})`, 14, 27);
 
-            // Ringkasan Teks
             doc.setTextColor(30, 41, 59);
             doc.setFontSize(11);
             doc.setFont("helvetica", "bold");
@@ -421,7 +424,6 @@
 
             let currentY = 48 + (splitAnalisis.length * 5) + 5;
 
-            // Render AutoTable
             const tableRows = globalWilayahList.map(w => [
                 w.nama, w.status, w.kesesuaian_iklim, w.ffmc, w.dmc, w.dc, w.fwi
             ]);
@@ -440,7 +442,6 @@
                 }
             });
 
-            // Download PDF File
             doc.save(`Laporan_MAHAKAM_FireWatch_${globalRawData.tanggal.replace(/ /g, "_")}.pdf`);
         });
     </script>
