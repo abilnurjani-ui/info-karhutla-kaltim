@@ -409,6 +409,7 @@
 
         let globalRawData = null;
         let globalWilayahList = [];
+        let currentWaktuDisplay = "WITA"; // Variabel global untuk menyimpan string waktu live
         let riskChartInstance = null;
         let trendChartInstance = null;
 
@@ -497,7 +498,7 @@
         document.getElementById('search-input').addEventListener('input', applyTableFilters);
         document.getElementById('filter-status').addEventListener('change', applyTableFilters);
 
-        // Handler Export PDF Resmi dengan Kop Kedinasan & Logo MAHAKAM FireWatch
+        // Handler Export PDF Resmi dengan Kop Kedinasan & Tanggal Otomatis
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             if (!globalRawData) return;
             const { jsPDF } = window.jspdf;
@@ -511,7 +512,7 @@
             doc.setFillColor(245, 158, 11);
             doc.rect(0, 36, 210, 2, 'F');
 
-            // render Logo ke dalam Kop PDF
+            // Render Logo ke dalam Kop PDF
             try {
                 const logoImg = document.getElementById('main-logo-img');
                 if (logoImg) {
@@ -521,7 +522,7 @@
                 console.warn("Logo tidak dapat disisipkan ke PDF:", err);
             }
 
-            // Teks Kop Surat (Diberi offset X: 40mm agar tidak menimpa logo)
+            // Teks Kop Surat
             doc.setTextColor(255, 255, 255); 
             doc.setFontSize(13); 
             doc.setFont("helvetica", "bold");
@@ -533,7 +534,8 @@
             doc.setFontSize(8); 
             doc.setFont("helvetica", "normal");
             doc.setTextColor(203, 213, 225);
-            doc.text(`Tanggal Pembaruan: ${globalRawData.tanggal || '-'} (${globalRawData.waktu || 'WITA'}) | Standar BMKG`, 40, 29);
+            // Menggunakan currentWaktuDisplay yang Otomatis Sinkron dengan Tampilan Web
+            doc.text(`Waktu Pembaruan: ${currentWaktuDisplay} | Standar BMKG`, 40, 29);
 
             // Tabel Data Wilayah
             const tableRows = globalWilayahList.map(w => [
@@ -562,7 +564,7 @@
             doc.setTextColor(100, 116, 139);
             doc.text("Dokumen ini dicetak secara otomatis dari Sistem MAHAKAM FireWatch untuk kebutuhan respon cepat operasional.", 14, finalY + 10);
 
-            doc.save(`Laporan_Resmi_Karhutla_Kaltim_${(globalRawData.tanggal || 'data').replace(/ /g, "_")}.pdf`);
+            doc.save(`Laporan_Resmi_Karhutla_Kaltim_${currentWaktuDisplay.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`);
         });
 
         // Handler Export CSV
@@ -574,7 +576,7 @@
             });
             const link = document.createElement("a");
             link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `MAHAKAM_FireWatch_${(globalRawData.tanggal || 'data').replace(/ /g, "_")}.csv`);
+            link.setAttribute("download", `MAHAKAM_FireWatch_${currentWaktuDisplay.replace(/[^a-zA-Z0-9]/g, "_")}.csv`);
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         });
 
@@ -602,7 +604,17 @@
 
                 const tgl = globalRawData.tanggal || docId;
                 const wkt = globalRawData.waktu || globalRawData.last_updated || "WITA";
-                document.getElementById('update-waktu').innerText = tgl + " (" + wkt + ")";
+                
+                // Menyusun String Waktu Otomatis Lengkap
+                if (globalRawData.waktu && globalRawData.tanggal) {
+                    currentWaktuDisplay = `${tgl} (${wkt})`;
+                } else if (globalRawData.waktu) {
+                    currentWaktuDisplay = `${docId} (${wkt})`;
+                } else {
+                    currentWaktuDisplay = `${tgl} (WITA)`;
+                }
+
+                document.getElementById('update-waktu').innerText = currentWaktuDisplay;
                 document.getElementById('ringkasan-analisis').innerText = globalRawData.ringkasan || globalRawData.analisis || "Tidak ada ringkasan.";
                 document.getElementById('rekomendasi-publik').innerText = globalRawData.rekomendasi || "Tidak ada rekomendasi.";
 
