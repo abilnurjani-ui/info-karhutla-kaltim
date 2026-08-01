@@ -392,38 +392,53 @@
             document.body.removeChild(link);
         });
 
-        // 7. Export to PDF Logic
+        // 7. Export to PDF Logic (TERUPDATE: Menambahkan Rekomendasi Operasional)
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             if (!globalRawData) return;
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
 
+            // Header Dokumen PDF
             doc.setFillColor(15, 23, 42);
             doc.rect(0, 0, 210, 32, 'F');
 
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
+            doc.setFontSize(15);
             doc.setFont("helvetica", "bold");
-            doc.text("MAHAKAM FireWatch - Laporan Karhutla", 14, 15);
+            doc.text("MAHAKAM FireWatch - Laporan Resmi Karhutla", 14, 15);
 
-            doc.setFontSize(9);
+            doc.setFontSize(8.5);
             doc.setFont("helvetica", "normal");
-            doc.text("Sistem Pemantauan Risiko Karhutla Real-Time Kalimantan Timur (BMKG)", 14, 22);
-            doc.text(`Update Data: ${globalRawData.tanggal} (${globalRawData.waktu})`, 14, 27);
+            doc.text("Sistem Pemantauan Risiko Karhutla Real-Time Kalimantan Timur (BMKG)", 14, 21);
+            doc.text(`Waktu Waktu Pembaruan: ${globalRawData.tanggal} (${globalRawData.waktu})`, 14, 26);
 
+            // Section 1: Ringkasan Analisis Meteorologi
             doc.setTextColor(30, 41, 59);
-            doc.setFontSize(11);
+            doc.setFontSize(10.5);
             doc.setFont("helvetica", "bold");
-            doc.text("Ringkasan Analisis Meteorologi:", 14, 42);
+            doc.text("1. Ringkasan Analisis Meteorologi & Iklim:", 14, 40);
 
-            doc.setFontSize(9);
+            doc.setFontSize(8.5);
             doc.setFont("helvetica", "normal");
             const splitAnalisis = doc.splitTextToSize(globalRawData.ringkasan, 182);
-            doc.text(splitAnalisis, 14, 48);
+            doc.text(splitAnalisis, 14, 46);
 
-            let currentY = 48 + (splitAnalisis.length * 5) + 5;
+            let currentY = 46 + (splitAnalisis.length * 4.5) + 4;
 
+            // Section 2: Rekomendasi Operasional (Bagian Baru Ditambahkan)
+            doc.setFontSize(10.5);
+            doc.setFont("helvetica", "bold");
+            doc.text("2. Rekomendasi Operasional Lapangan:", 14, currentY);
+
+            doc.setFontSize(8.5);
+            doc.setFont("helvetica", "normal");
+            const splitRekomendasi = doc.splitTextToSize(globalRawData.rekomendasi, 182);
+            doc.text(splitRekomendasi, 14, currentY + 6);
+
+            currentY = currentY + 6 + (splitRekomendasi.length * 4.5) + 6;
+
+            // Section 3: Tabel Parameter FDRS & Iklim per Wilayah
             const tableRows = globalWilayahList.map(w => [
                 w.nama, w.status, w.kesesuaian_iklim, w.ffmc, w.dmc, w.dc, w.fwi
             ]);
@@ -434,7 +449,7 @@
                 body: tableRows,
                 theme: 'striped',
                 headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
-                styles: { fontSize: 8, cellPadding: 2.5 },
+                styles: { fontSize: 7.5, cellPadding: 2 },
                 columnStyles: {
                     0: { fontStyle: 'bold' },
                     1: { halign: 'center' },
@@ -442,6 +457,7 @@
                 }
             });
 
+            // Simpan Dokumen PDF
             doc.save(`Laporan_MAHAKAM_FireWatch_${globalRawData.tanggal.replace(/ /g, "_")}.pdf`);
         });
     </script>
