@@ -2,7 +2,9 @@ name: Auto Update Data Karhutla
 
 on:
   schedule:
-    - cron: '0 23,5 * * *'
+    # 00:00 UTC = 08:00 WITA (Pagi)
+    # 12:00 UTC = 20:00 WITA (Malam)
+    - cron: '0 0,12 * * *'
   workflow_dispatch:
 
 permissions:
