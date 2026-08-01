@@ -1,6 +1,6 @@
 {
     "tanggal": "01 Agustus 2026",
-    "waktu": "14:42 WITA",
+    "waktu": "14:55 WITA",
     "tabel_wilayah": [
         {
             "nama": "Paser",
@@ -113,6 +113,6 @@
             "fwi": "Rendah (<2.0)"
         }
     ],
-    "ringkasan": "Update Integrasi BMKG Cuaca & Iklim (01 Agustus 2026 14:42 WITA): Dari 10 wilayah Kaltim, terdeteksi 3 wilayah dengan status Sangat Rawan & Indeks Iklim 'Sangat Sesuai' untuk kemunculan titik panas, 5 Waspada, dan 2 Aman. Klaster risiko tinggi terkonsentrasi di sektor selatan (Paser, PPU, Balikpapan).",
+    "ringkasan": "Update Integrasi BMKG Cuaca & Iklim (01 Agustus 2026 14:55 WITA): Dari 10 wilayah Kaltim, terdeteksi 3 wilayah dengan status Sangat Rawan & Indeks Iklim 'Sangat Sesuai' untuk kemunculan titik panas, 5 Waspada, dan 2 Aman. Klaster risiko tinggi terkonsentrasi di sektor selatan (Paser, PPU, Balikpapan).",
     "rekomendasi": "1. Tingkatkan siaga darurat pada area dengan Indeks Kesesuaian Iklim 'Sangat Sesuai' (Paser, PPU, Balikpapan).\n2. Aktifkan pemantauan satelit TERRA/AQUA & SNPP secara real-time untuk mendeteksi pembentukan awal titik panas (hotspot).\n3. Lakukan ground-check dan pembatasan aktivitas pembukaan lahan di area berisiko."
 }
