@@ -409,7 +409,7 @@
 
         let globalRawData = null;
         let globalWilayahList = [];
-        let currentWaktuDisplay = "WITA"; // Variabel global untuk menyimpan string waktu live
+        let currentWaktuDisplay = "WITA";
         let riskChartInstance = null;
         let trendChartInstance = null;
 
@@ -498,7 +498,7 @@
         document.getElementById('search-input').addEventListener('input', applyTableFilters);
         document.getElementById('filter-status').addEventListener('change', applyTableFilters);
 
-        // Handler Export PDF Resmi dengan Kop Kedinasan & Tanggal Otomatis
+        // Handler Export PDF Resmi dengan Kop Kedinasan
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             if (!globalRawData) return;
             const { jsPDF } = window.jspdf;
@@ -534,7 +534,6 @@
             doc.setFontSize(8); 
             doc.setFont("helvetica", "normal");
             doc.setTextColor(203, 213, 225);
-            // Menggunakan currentWaktuDisplay yang Otomatis Sinkron dengan Tampilan Web
             doc.text(`Waktu Pembaruan: ${currentWaktuDisplay} | Standar BMKG`, 40, 29);
 
             // Tabel Data Wilayah
@@ -605,13 +604,13 @@
                 const tgl = globalRawData.tanggal || docId;
                 const wkt = globalRawData.waktu || globalRawData.last_updated || "WITA";
                 
-                // Menyusun String Waktu Otomatis Lengkap
-                if (globalRawData.waktu && globalRawData.tanggal) {
-                    currentWaktuDisplay = `${tgl} (${wkt})`;
+                // MENGEMBALIKAN LOGIKA PEMFORMATAN WAKTU ASLI LENGKAP
+                if (globalRawData.tanggal && globalRawData.waktu) {
+                    currentWaktuDisplay = `${globalRawData.tanggal} (${globalRawData.waktu})`;
                 } else if (globalRawData.waktu) {
-                    currentWaktuDisplay = `${docId} (${wkt})`;
+                    currentWaktuDisplay = `${tgl} (${globalRawData.waktu})`;
                 } else {
-                    currentWaktuDisplay = `${tgl} (WITA)`;
+                    currentWaktuDisplay = `${tgl} (${wkt})`;
                 }
 
                 document.getElementById('update-waktu').innerText = currentWaktuDisplay;
