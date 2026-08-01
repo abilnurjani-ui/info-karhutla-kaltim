@@ -122,7 +122,7 @@
             </section>
         </div>
 
-        <!-- Section Grafik Tren 7 Hari Terakhir (Time-Series Firestore) -->
+        <!-- Section Grafik Tren 7 Hari Terakhir -->
         <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
                 <div>
@@ -144,7 +144,7 @@
             </div>
         </section>
 
-        <!-- Section Tabel Data dengan Toolbar Filter & Export -->
+        <!-- Section Tabel Data -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
@@ -226,7 +226,7 @@
     <!-- Script Logika Frontend Terintegrasi Firebase Firestore (Module) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, query, orderBy, limit, documentId } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD8Thtpv8Xe94ydJOhtL8hwZJTPL7QFkh4",
@@ -264,7 +264,6 @@
             return L.divIcon({ html: svgHtml, className: 'custom-fire-marker', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
         }
 
-        // Helper Normalisasi Status
         function normalizeStatus(statusRaw) {
             if (!statusRaw) return 'Aman';
             const s = String(statusRaw).trim().toLowerCase();
@@ -273,7 +272,6 @@
             return 'Aman';
         }
 
-        // Render Tabel
         function renderTable(listData) {
             const tableBody = document.getElementById('tabel-body');
             tableBody.innerHTML = '';
@@ -327,30 +325,33 @@
         // Fetch Live Firestore Data
         async function fetchLiveFirestoreData() {
             try {
-                let querySnapshot;
-                try {
-                    const q = query(collection(db, "history"), orderBy(documentId(), "desc"), limit(1));
-                    querySnapshot = await getDocs(q);
-                } catch (e) {
-                    console.warn("Menggunakan query fallback tanpa index:", e);
-                    querySnapshot = await getDocs(collection(db, "history"));
-                }
+                const querySnapshot = await getDocs(collection(db, "history"));
 
                 if (querySnapshot.empty) {
                     document.getElementById('update-waktu').innerText = "Belum Ada Data Firestore";
                     return;
                 }
 
-                // Ambil dokumen terbaru
+                // Urutkan dokumen dari tanggal terbaru ke terlama
                 const docs = querySnapshot.docs.sort((a, b) => b.id.localeCompare(a.id));
-                const docSnap = docs[0];
 
-                globalRawData = docSnap.data();
-                const docId = docSnap.id;
+                // ⚡ AUTO-FILTER: Cari dokumen pertama yang MEMILIKI ISI DATA WILAYAH
+                let targetDoc = docs.find(d => {
+                    const data = d.data();
+                    const list = data.tabel_wilayah || data.wilayah || data.data || data.kabupaten;
+                    return list && list.length > 0;
+                });
 
-                console.log("🔥 Raw Data dari Firestore:", globalRawData);
+                // Jika semua dokumen belum punya data wilayah, gunakan dokumen pertama sebagai fallback
+                if (!targetDoc) {
+                    targetDoc = docs[0];
+                }
 
-                // Deteksi otomatis struktur field list wilayah
+                globalRawData = targetDoc.data();
+                const docId = targetDoc.id;
+
+                console.log("🔥 Dokumen Lengkap Yang Dipilih:", docId, globalRawData);
+
                 globalWilayahList = globalRawData.tabel_wilayah || globalRawData.wilayah || globalRawData.data || globalRawData.kabupaten || [];
 
                 // Set Teks UI
