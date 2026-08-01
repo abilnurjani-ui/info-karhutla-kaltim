@@ -226,7 +226,7 @@
     <!-- Script Logika Frontend Terintegrasi Firebase Firestore (Module) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, query, orderBy, limit, documentId } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
         // Konfigurasi Firebase Web SDK
         const firebaseConfig = {
@@ -300,11 +300,11 @@
         }
 
         function applyTableFilters() {
-            const query = document.getElementById('search-input').value.toLowerCase();
+            const queryVal = document.getElementById('search-input').value.toLowerCase();
             const statusFilter = document.getElementById('filter-status').value;
 
             const filtered = globalWilayahList.filter(item => {
-                const matchName = item.nama ? item.nama.toLowerCase().includes(query) : false;
+                const matchName = item.nama ? item.nama.toLowerCase().includes(queryVal) : false;
                 const matchStatus = (statusFilter === 'ALL') || (item.status === statusFilter);
                 return matchName && matchStatus;
             });
@@ -318,8 +318,8 @@
         // 3. Fetch Live Data dari Firebase Firestore Database
         async function fetchLiveFirestoreData() {
             try {
-                // Mengambil 1 dokumen terbaru berdasarkan ID dokumen (Tanggal YYYY-MM-DD)
-                const q = query(collection(db, "history"), orderBy("__name__", "desc"), limit(1));
+                // Query menggunakan documentId() agar mengurutkan ID dokumen tanggal terbaru (YYYY-MM-DD)
+                const q = query(collection(db, "history"), orderBy(documentId(), "desc"), limit(1));
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
