@@ -1,14 +1,17 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import json
 from google.auth.credentials import AnonymousCredentials
 from google.cloud import firestore
 
 # ==========================================
-# 1. PERSIAPAN DATA & TANGGAL
+# 1. PERSIAPAN DATA & TANGGAL (FIX ZONA WAKTU WITA)
 # ==========================================
 print("🔍 Memulai proses update data Karhutla...")
 
-now = datetime.now()
+# Mengunci zona waktu ke WITA (UTC+8)
+wita_tz = timezone(timedelta(hours=8))
+now = datetime.now(wita_tz)
+
 doc_id = now.strftime("%Y-%m-%d")
 current_time = now.strftime("%Y-%m-%d %H:%M:%S WITA")
 
