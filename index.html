@@ -24,6 +24,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
+    <!-- Open Graph / Social Media Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://info-karhutla-kaltim.vercel.app/">
+    <meta property="og:title" content="MAHAKAM FireWatch - Command Center Karhutla Kaltim">
+    <meta property="og:description" content="Sistem Peringatan Dini & Pemantauan Risiko Kebakaran Hutan dan Lahan Kalimantan Timur Berdasarkan Standar BMKG.">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/8/84/Coat_of_arms_of_East_Kalimantan.svg">
+
+    <!-- Favicon (Ikon Tab Browser) -->
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/8/84/Coat_of_arms_of_East_Kalimantan.svg">
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
@@ -32,39 +42,112 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
-    <!-- Header Command Center -->
+    <!-- Header Command Center Resmi (Logo Pemprov & BMKG) -->
     <header class="glass-header text-white border-b border-slate-700/50 shadow-xl relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 relative z-10">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-3">
-                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        Real-Time FDRS & Climate Index (Firestore Live)
+                
+                <!-- Identitas & Dual Logo Instansi -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <!-- Dual Logo Box -->
+                    <div class="bg-white/10 p-2 rounded-xl backdrop-blur border border-white/10 flex items-center gap-2 flex-shrink-0">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Coat_of_arms_of_East_Kalimantan.svg" 
+                             alt="Logo Kaltim" 
+                             class="w-8 h-10 sm:w-10 sm:h-12 object-contain drop-shadow" title="Pemprov Kaltim">
+                        <div class="w-px h-8 bg-white/20"></div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_BMKG_%28Badan_Meteorologi_Klimatologi_dan_Geofisika%29.svg" 
+                             alt="Logo BMKG" 
+                             class="w-8 h-10 sm:w-10 sm:h-12 object-contain drop-shadow" title="BMKG">
                     </div>
-                    <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2 sm:gap-3">
-                        <svg class="w-7 h-7 sm:w-9 sm:h-9 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 23c-4.97 0-9-3.58-9-8 0-4.19 3.01-7.81 7.08-11.23.36-.3.88-.13.99.33.56 2.37 2.05 4.17 3.86 5.37 1.48 1 2.57 2.39 3.01 4.03.11.41.6.56.88.25.99-1.07 1.68-2.39 2.01-3.79.08-.34.52-.45.75-.2 2.11 2.3 3.41 5.17 3.41 8.24 0 4.42-4.03 8-9 8zm-1-8.5c0-.83-.67-1.5-1.5-1.5S8 13.67 8 14.5 8.67 16 9.5 16s1.5-.67 1.5-1.5z"/>
-                        </svg>
-                        MAHAKAM FireWatch
-                    </h1>
-                    <p class="text-slate-300 font-medium text-xs sm:text-lg mt-1">
-                        Monitoring & Analisis Risiko Kebakaran Hutan dan Lahan Kalimantan Timur
-                    </p>
+
+                    <div>
+                        <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-1">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                            Sistem Peringatan Dini Karhutla Resmi
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                            MAHAKAM FireWatch
+                        </h1>
+                        <p class="text-slate-300 font-medium text-xs sm:text-sm mt-0.5">
+                            Command Center Monitoring Kebakaran Hutan & Lahan Prov. Kalimantan Timur
+                        </p>
+                    </div>
                 </div>
 
-                <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-3 sm:p-4 shadow-inner w-full md:w-auto">
-                    <div class="text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider mb-0.5 sm:mb-1">Status Pembaruan</div>
+                <!-- Live Update Badge -->
+                <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-3 sm:p-3.5 shadow-inner w-full md:w-auto">
+                    <div class="text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider mb-0.5">Status Pembaruan</div>
                     <div class="flex items-center gap-2">
-                        <span class="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
+                        <span class="relative flex h-2.5 w-2.5">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-emerald-500"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                         </span>
                         <span class="text-xs sm:text-sm font-bold text-emerald-400" id="update-waktu">Memuat dari Firestore...</span>
                     </div>
                 </div>
+
             </div>
         </div>
     </header>
+
+    <!-- Baris Akses Cepat & Kontak Darurat Posko -->
+    <section class="bg-amber-500 text-slate-900 border-b border-amber-600/30 shadow-md py-3 px-4">
+        <div class="max-w-7xl mx-auto space-y-2.5">
+            
+            <!-- Judul & Tombol Layanan Darurat Terpadu 112 -->
+            <div class="bg-slate-900 text-white p-2.5 rounded-xl border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5">
+                <div class="flex items-start gap-2.5">
+                    <span class="flex h-3.5 w-3.5 relative flex-shrink-0 mt-0.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-600"></span>
+                    </span>
+                    <div class="text-xs">
+                        <span class="font-extrabold text-amber-400 uppercase tracking-wide block sm:inline">🚨 Layanan Darurat Terpadu:</span>
+                        <span class="text-slate-200"> Hubungi <b>112</b> (Gratis dari ponsel, aktif 24 jam untuk meneruskan laporan darurat ke pemadam kebakaran, BPBD, dan Manggala Agni setempat)</span>
+                    </div>
+                </div>
+                
+                <a href="tel:112" class="self-stretch md:self-auto inline-flex items-center justify-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg transition-colors text-xs font-black shadow-sm flex-shrink-0">
+                    📞 Panggil 112 Sekarang
+                </a>
+            </div>
+
+            <!-- Tombol Interaktif Kontak Lembaga -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                
+                <!-- Kontak Pusdalops BPBD Kaltim -->
+                <div class="bg-amber-400/80 p-2 rounded-lg border border-amber-600/20 flex flex-wrap items-center justify-between gap-1.5">
+                    <span class="font-bold text-slate-900">🛡️ Pusdalops-PB BPBD Kaltim (Siaga 24 Jam):</span>
+                    <div class="flex items-center gap-1.5 flex-wrap font-bold">
+                        <a href="tel:08115844722" class="bg-slate-900 text-white px-2 py-0.5 rounded hover:bg-slate-800 transition-colors">
+                            📞 Telp/SMS
+                        </a>
+                        <a href="https://wa.me/628115844722?text=Laporan%20Indikasi%20Kebakaran%20Hutan%20dan%20Lahan" target="_blank" class="bg-emerald-700 text-white px-2 py-0.5 rounded hover:bg-emerald-800 transition-colors">
+                            💬 WhatsApp
+                        </a>
+                        <a href="mailto:bpbd.kaltimprov@gmail.com?subject=Laporan%20Kebakaran%20Hutan%20dan%20Lahan" class="bg-blue-800 text-white px-2 py-0.5 rounded hover:bg-blue-900 transition-colors">
+                            ✉️ Email
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kontak BMKG Samarinda -->
+                <div class="bg-amber-400/80 p-2 rounded-lg border border-amber-600/20 flex flex-wrap items-center justify-between gap-1.5">
+                    <span class="font-bold text-slate-900">🌤️ BMKG Samarinda (08.00 - 16.00 WITA):</span>
+                    <div class="flex items-center gap-1.5 flex-wrap font-bold">
+                        <a href="tel:085350611416" class="bg-slate-900 text-white px-2 py-0.5 rounded hover:bg-slate-800 transition-colors">
+                            📞 Telp/SMS
+                        </a>
+                        <a href="https://wa.me/6285350611416?text=Konsultasi%20Data%20Iklim%20dan%20FDRS%20Karhutla" target="_blank" class="bg-emerald-700 text-white px-2 py-0.5 rounded hover:bg-emerald-800 transition-colors">
+                            💬 WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow space-y-4 sm:space-y-8 w-full">
@@ -297,6 +380,12 @@
             </div>
         </section>
 
+        <!-- Catatan Penafian (Disclaimer Legal) -->
+        <div class="text-[11px] text-slate-500 bg-slate-100 p-4 rounded-xl border border-slate-200 mt-6">
+            <p class="font-semibold text-slate-700 mb-1">📌 Catatan Penafian (Disclaimer):</p>
+            <p>Data parameter FDRS dan Indeks Iklim diperbarui secara berkala melalui sinkronisasi otomatis. Hasil analisis digunakan sebagai panduan kewaspadaan dini operasional dan bukan merupakan keputusan hukum mutlak tanpa verifikasi lapangan oleh petugas darat.</p>
+        </div>
+
     </main>
 
     <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-8 sm:mt-12 py-5 text-center text-[10px] sm:text-xs">
@@ -410,24 +499,62 @@
         document.getElementById('search-input').addEventListener('input', applyTableFilters);
         document.getElementById('filter-status').addEventListener('change', applyTableFilters);
 
-        // Handler Export PDF
+        // Handler Export PDF Resmi dengan Kop Kedinasan
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             if (!globalRawData) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 32, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(15); doc.setFont("helvetica", "bold");
-            doc.text("MAHAKAM FireWatch - Laporan Resmi Karhutla", 14, 15);
-            doc.setFontSize(8.5); doc.setFont("helvetica", "normal");
-            doc.text(`Waktu Pembaruan: ${globalRawData.tanggal || ''} (${globalRawData.waktu || ''})`, 14, 26);
 
-            const tableRows = globalWilayahList.map(w => [w.nama || w.kabupaten, normalizeStatus(w.status), w.kesesuaian_iklim || '-', w.ffmc ?? '-', w.dmc ?? '-', w.dc ?? '-', w.fwi ?? '-']);
+            // Header Kop Surat Kedinasan
+            doc.setFillColor(15, 23, 42); 
+            doc.rect(0, 0, 210, 36, 'F');
+            
+            // Garis Aksen Emas
+            doc.setFillColor(245, 158, 11);
+            doc.rect(0, 36, 210, 2, 'F');
+
+            // Teks Kop
+            doc.setTextColor(255, 255, 255); 
+            doc.setFontSize(14); 
+            doc.setFont("helvetica", "bold");
+            doc.text("KOMANDO POSKO KARHUTLA KALIMANTAN TIMUR", 14, 15);
+            
+            doc.setFontSize(11);
+            doc.text("Laporan Analisis Risiko Kebakaran Hutan & Lahan (FDRS)", 14, 22);
+
+            doc.setFontSize(8); 
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(203, 213, 225);
+            doc.text(`Tanggal Pembaruan: ${globalRawData.tanggal || '-'} (${globalRawData.waktu || 'WITA'}) | Sumber: Firestore Standard BMKG`, 14, 30);
+
+            // Tabel Data Wilayah
+            const tableRows = globalWilayahList.map(w => [
+                w.nama || w.kabupaten || '-', 
+                normalizeStatus(w.status), 
+                w.kesesuaian_iklim || '-', 
+                w.ffmc ?? '-', 
+                w.dmc ?? '-', 
+                w.dc ?? '-', 
+                w.fwi ?? '-'
+            ]);
+
             doc.autoTable({
-                startY: 38, head: [['Kab/Kota', 'Status Risiko', 'Kesesuaian Iklim', 'FFMC', 'DMC', 'DC', 'FWI']],
-                body: tableRows, theme: 'striped',
-                headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255] }
+                startY: 44, 
+                head: [['Kabupaten / Kota', 'Status Risiko', 'Kesesuaian Iklim', 'FFMC', 'DMC', 'DC', 'FWI']],
+                body: tableRows, 
+                theme: 'striped',
+                headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [248, 250, 252] },
+                styles: { fontSize: 8, cellPadding: 3 }
             });
-            doc.save(`Laporan_MAHAKAM_FireWatch_${(globalRawData.tanggal || 'data').replace(/ /g, "_")}.pdf`);
+
+            // Footer Catatan Resmi
+            const finalY = doc.lastAutoTable.finalY || 150;
+            doc.setFontSize(7);
+            doc.setTextColor(100, 116, 139);
+            doc.text("Dokumen ini dicetak secara otomatis dari Sistem MAHAKAM FireWatch untuk kebutuhan respon cepat operasional.", 14, finalY + 10);
+
+            doc.save(`Laporan_Resmi_Karhutla_Kaltim_${(globalRawData.tanggal || 'data').replace(/ /g, "_")}.pdf`);
         });
 
         // Handler Export CSV
