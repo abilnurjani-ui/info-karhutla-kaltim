@@ -3,30 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary Meta Tags -->
-    <title>MAHAKAM FireWatch — Monitoring & Analisis Karhutla Kaltim</title>
-    <meta name="title" content="MAHAKAM FireWatch — Monitoring & Analisis Karhutla Kaltim">
-    <meta name="description" content="Portal Pemantauan Risiko Karhutla Real-Time 10 Kabupaten/Kota Kalimantan Timur Berbasis Data BMKG.">
-    <meta name="keywords" content="Karhutla, Kaltim, BMKG, FDRS, Kebakaran Hutan, Samarinda, Balikpapan, Paser">
-    <meta name="author" content="MAHAKAM FireWatch Team">
-
-    <!-- Embedded Favicon SVG (Logo Api Tab Browser) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f59e0b'%3E%3Cpath d='M12 23c-4.97 0-9-3.58-9-8 0-4.19 3.01-7.81 7.08-11.23.36-.3.88-.13.99.33.56 2.37 2.05 4.17 3.86 5.37 1.48 1 2.57 2.39 3.01 4.03.11.41.6.56.88.25.99-1.07 1.68-2.39 2.01-3.79.08-.34.52-.45.75-.2 2.11 2.3 3.41 5.17 3.41 8.24 0 4.42-4.03 8-9 8zm-1-8.5c0-.83-.67-1.5-1.5-1.5S8 13.67 8 14.5 8.67 16 9.5 16s1.5-.67 1.5-1.5z'/%3E%3C/svg%3E">
-
-    <!-- Open Graph / Facebook / WhatsApp Preview -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://info-karhutla-kaltim.vercel.app/">
-    <meta property="og:title" content="MAHAKAM FireWatch — Monitoring Karhutla Kaltim">
-    <meta property="og:description" content="Portal Pemantauan Risiko Karhutla Real-Time 10 Kabupaten/Kota Kalimantan Timur Berbasis Data BMKG.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?auto=format&fit=crop&w=1200&q=80">
-
-    <!-- Twitter / X Card Preview -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://info-karhutla-kaltim.vercel.app/">
-    <meta property="twitter:title" content="MAHAKAM FireWatch — Monitoring Karhutla Kaltim">
-    <meta property="twitter:description" content="Portal Pemantauan Risiko Karhutla Real-Time 10 Kabupaten/Kota Kalimantan Timur Berbasis Data BMKG.">
-    <meta property="twitter:image" content="https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?auto=format&fit=crop&w=1200&q=80">
+    <title>MAHAKAM FireWatch - Command Center Karhutla Kaltim</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -73,9 +50,6 @@
                     <p class="text-slate-300 font-medium text-base sm:text-lg mt-1">
                         Monitoring & Analisis Hutan Kebakaran Kalimantan Timur
                     </p>
-                    <p class="text-slate-400 text-xs sm:text-sm mt-2 max-w-2xl bg-slate-800/60 backdrop-blur border border-slate-700/60 p-2.5 rounded-lg">
-                        Portal Pemantauan Risiko Karhutla Real-Time 10 Kabupaten/Kota Kalimantan Timur Berbasis Data BMKG
-                    </p>
                 </div>
 
                 <div class="self-start md:self-center bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-4 shadow-inner min-w-[220px]">
@@ -116,7 +90,7 @@
             </div>
         </div>
 
-        <!-- Section Visualisasi: Peta + Donut Chart -->
+        <!-- Section Visualisasi Utama: Peta + Donut Chart -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <section class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between">
@@ -139,18 +113,36 @@
                         Proporsi Wilayah
                     </div>
                     <h2 class="text-lg font-bold text-slate-900 mb-1">Distribusi Risiko Karhutla</h2>
-                    <p class="text-xs text-slate-500 mb-4">Persentase tingkat kerawanan 10 Kabupaten/Kota.</p>
+                    <p class="text-xs text-slate-500 mb-4">Persentase tingkat kerawanan saat ini.</p>
                     
                     <div class="relative flex items-center justify-center h-[260px]">
                         <canvas id="riskChart"></canvas>
                     </div>
                 </div>
-
-                <div class="border-t border-slate-100 pt-3 mt-4 text-center">
-                    <span class="text-xs font-medium text-slate-400">Total Wilayah Dipantau: <b class="text-slate-700">10 Kab/Kota</b></span>
-                </div>
             </section>
         </div>
+
+        <!-- Section BARU: Grafik Tren 7 Hari Terakhir (Time-Series) -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+                <div>
+                    <div class="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider mb-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                        </svg>
+                        Analisis Histori (Time-Series)
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Tren Sebaran Risiko 7 Hari Terakhir</h2>
+                </div>
+                <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg border font-semibold">
+                    Otomatis Diperbarui dari Folder /history/
+                </span>
+            </div>
+            
+            <div class="h-[280px] w-full">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </section>
 
         <!-- Section Tabel Data dengan Toolbar Filter & Export -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
@@ -163,7 +155,7 @@
                 <div class="flex flex-wrap items-center gap-2.5">
                     <div class="relative flex-1 sm:w-48">
                         <input type="text" id="search-input" placeholder="Cari wilayah..." 
-                            class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
@@ -177,16 +169,10 @@
                     </select>
 
                     <button id="btn-export-csv" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
                         CSV
                     </button>
 
                     <button id="btn-export-pdf" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
-                        </svg>
                         Laporan PDF
                     </button>
                 </div>
@@ -249,7 +235,6 @@
         const map = L.map('map', { zoomControl: true, scrollWheelZoom: false, layers: [osmLayer] }).setView([-0.4948, 117.1436], 7);
         L.control.layers({ "Peta Jalan (OSM)": osmLayer, "Satelit (Esri)": esriSatLayer }, null, { position: 'topright' }).addTo(map);
 
-        // 2. Custom Fire Marker
         function createCustomFireIcon(colorHex) {
             const svgHtml = `
                 <div class="relative flex items-center justify-center w-8 h-8">
@@ -263,8 +248,9 @@
         }
 
         let riskChartInstance = null;
+        let trendChartInstance = null;
 
-        // 3. Render Tabel Filter
+        // 2. Render Tabel
         function renderTable(listData) {
             const tableBody = document.getElementById('tabel-body');
             tableBody.innerHTML = '';
@@ -297,7 +283,6 @@
             });
         }
 
-        // 4. Logika Filter
         function applyTableFilters() {
             const query = document.getElementById('search-input').value.toLowerCase();
             const statusFilter = document.getElementById('filter-status').value;
@@ -314,7 +299,7 @@
         document.getElementById('search-input').addEventListener('input', applyTableFilters);
         document.getElementById('filter-status').addEventListener('change', applyTableFilters);
 
-        // 5. Fetch Data Utama
+        // 3. Fetch Live Data & Inisialisasi Dashboard
         fetch('data_karhutla.json')
             .then(res => res.json())
             .then(data => {
@@ -340,14 +325,11 @@
                             <div class="text-base font-bold mb-1">${item.nama}</div>
                             <div class="mb-1"><b>Status:</b> ${item.status}</div>
                             <div class="mb-2 text-xs text-amber-700"><b>Iklim Hotspot:</b> ${item.kesesuaian_iklim}</div>
-                            <div class="text-xs space-y-0.5 border-t border-slate-200 pt-1.5 text-slate-600">
-                                <div><b>FFMC:</b> ${item.ffmc}</div>
-                                <div><b>FWI:</b> ${item.fwi}</div>
-                            </div>
                         </div>
                     `);
                 });
 
+                // Render Donut Chart
                 const ctx = document.getElementById('riskChart').getContext('2d');
                 if (riskChartInstance) riskChartInstance.destroy();
 
@@ -358,106 +340,151 @@
                         datasets: [{
                             data: [statusCounts['Sangat Rawan'], statusCounts['Waspada'], statusCounts['Aman']],
                             backgroundColor: ['#f43f5e', '#f59e0b', '#10b981'],
-                            borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6
+                            borderWidth: 3, borderColor: '#ffffff'
                         }]
                     },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' }, padding: 16, usePointStyle: true } }
-                        },
-                        cutout: '68%'
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '68%' }
                 });
+
+                // Panggil Logika Load Tren 7 Hari
+                load7DayTrendChart(data.iso_date || new Date().toISOString().split('T')[0], statusCounts);
             });
 
-        // 6. Export to CSV Logic
-        document.getElementById('btn-export-csv').addEventListener('click', () => {
-            if (!globalWilayahList.length) return;
+        // 4. Logika Fetch History & Render Line Chart (Tren 7 Hari)
+        async function load7DayTrendChart(todayIso, currentCounts) {
+            const labels = [];
+            const rawanData = [];
+            const waspadaData = [];
+            const amanData = [];
 
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Kabupaten/Kota,Status Risiko,Kesesuaian Iklim Hotspot,FFMC,DMC,DC,FWI\n";
+            const baseDate = new Date(todayIso);
 
-            globalWilayahList.forEach(item => {
-                let row = `"${item.nama}","${item.status}","${item.kesesuaian_iklim}","${item.ffmc}","${item.dmc}","${item.dc}","${item.fwi}"`;
-                csvContent += row + "\n";
-            });
+            // Generasi Tanggal 6 Hari Lalu s.d. Hari Ini
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(baseDate);
+                d.setDate(d.getDate() - i);
+                const isoStr = d.toISOString().split('T')[0];
+                const displayLabel = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `MAHAKAM_FireWatch_${globalRawData.tanggal.replace(/ /g, "_")}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
+                labels.push(displayLabel);
 
-        // 7. Export to PDF Logic (TERUPDATE: Menambahkan Rekomendasi Operasional)
-        document.getElementById('btn-export-pdf').addEventListener('click', () => {
-            if (!globalRawData) return;
+                if (i === 0) {
+                    // Hari ini (Data Live)
+                    rawanData.push(currentCounts["Sangat Rawan"]);
+                    waspadaData.push(currentCounts["Waspada"]);
+                    amanData.push(currentCounts["Aman"]);
+                } else {
+                    // Coba Ambil File JSON dari Folder /history/
+                    try {
+                        const res = await fetch(`history/${isoStr}.json`);
+                        if (res.ok) {
+                            const hData = await res.json();
+                            let r = 0, w = 0, a = 0;
+                            hData.tabel_wilayah.forEach(item => {
+                                if (item.status === 'Sangat Rawan') r++;
+                                else if (item.status === 'Waspada') w++;
+                                else a++;
+                            });
+                            rawanData.push(r);
+                            waspadaData.push(w);
+                            amanData.push(a);
+                        } else {
+                            // Jika file histori hari tersebut belum ada, fallback isi 0 atau salin nilai terdekat
+                            rawanData.push(null);
+                            waspadaData.push(null);
+                            amanData.push(null);
+                        }
+                    } catch (e) {
+                        rawanData.push(null);
+                        waspadaData.push(null);
+                        amanData.push(null);
+                    }
+                }
+            }
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
+            // Render Line Chart
+            const ctxTrend = document.getElementById('trendChart').getContext('2d');
+            if (trendChartInstance) trendChartInstance.destroy();
 
-            // Header Dokumen PDF
-            doc.setFillColor(15, 23, 42);
-            doc.rect(0, 0, 210, 32, 'F');
-
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(15);
-            doc.setFont("helvetica", "bold");
-            doc.text("MAHAKAM FireWatch - Laporan Resmi Karhutla", 14, 15);
-
-            doc.setFontSize(8.5);
-            doc.setFont("helvetica", "normal");
-            doc.text("Sistem Pemantauan Risiko Karhutla Real-Time Kalimantan Timur (BMKG)", 14, 21);
-            doc.text(`Waktu Waktu Pembaruan: ${globalRawData.tanggal} (${globalRawData.waktu})`, 14, 26);
-
-            // Section 1: Ringkasan Analisis Meteorologi
-            doc.setTextColor(30, 41, 59);
-            doc.setFontSize(10.5);
-            doc.setFont("helvetica", "bold");
-            doc.text("1. Ringkasan Analisis Meteorologi & Iklim:", 14, 40);
-
-            doc.setFontSize(8.5);
-            doc.setFont("helvetica", "normal");
-            const splitAnalisis = doc.splitTextToSize(globalRawData.ringkasan, 182);
-            doc.text(splitAnalisis, 14, 46);
-
-            let currentY = 46 + (splitAnalisis.length * 4.5) + 4;
-
-            // Section 2: Rekomendasi Operasional (Bagian Baru Ditambahkan)
-            doc.setFontSize(10.5);
-            doc.setFont("helvetica", "bold");
-            doc.text("2. Rekomendasi Operasional Lapangan:", 14, currentY);
-
-            doc.setFontSize(8.5);
-            doc.setFont("helvetica", "normal");
-            const splitRekomendasi = doc.splitTextToSize(globalRawData.rekomendasi, 182);
-            doc.text(splitRekomendasi, 14, currentY + 6);
-
-            currentY = currentY + 6 + (splitRekomendasi.length * 4.5) + 6;
-
-            // Section 3: Tabel Parameter FDRS & Iklim per Wilayah
-            const tableRows = globalWilayahList.map(w => [
-                w.nama, w.status, w.kesesuaian_iklim, w.ffmc, w.dmc, w.dc, w.fwi
-            ]);
-
-            doc.autoTable({
-                startY: currentY,
-                head: [['Kab/Kota', 'Status Risiko', 'Kesesuaian Iklim', 'FFMC', 'DMC', 'DC', 'FWI']],
-                body: tableRows,
-                theme: 'striped',
-                headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
-                styles: { fontSize: 7.5, cellPadding: 2 },
-                columnStyles: {
-                    0: { fontStyle: 'bold' },
-                    1: { halign: 'center' },
-                    2: { halign: 'center' }
+            trendChartInstance = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Sangat Rawan',
+                            data: rawanData,
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true,
+                            spanGaps: true
+                        },
+                        {
+                            label: 'Waspada',
+                            data: waspadaData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.05)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            spanGaps: true
+                        },
+                        {
+                            label: 'Aman',
+                            data: amanData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            spanGaps: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Plus Jakarta Sans', weight: '600' } } }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
                 }
             });
+        }
 
-            // Simpan Dokumen PDF
+        // Export to CSV & PDF
+        document.getElementById('btn-export-csv').addEventListener('click', () => {
+            if (!globalWilayahList.length) return;
+            let csvContent = "data:text/csv;charset=utf-8,Kabupaten/Kota,Status Risiko,Kesesuaian Iklim Hotspot,FFMC,DMC,DC,FWI\n";
+            globalWilayahList.forEach(i => { csvContent += `"${i.nama}","${i.status}","${i.kesesuaian_iklim}","${i.ffmc}","${i.dmc}","${i.dc}","${i.fwi}"\n`; });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `MAHAKAM_FireWatch_${globalRawData.tanggal.replace(/ /g, "_")}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        });
+
+        document.getElementById('btn-export-pdf').addEventListener('click', () => {
+            if (!globalRawData) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 32, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(15); doc.setFont("helvetica", "bold");
+            doc.text("MAHAKAM FireWatch - Laporan Resmi Karhutla", 14, 15);
+            doc.setFontSize(8.5); doc.setFont("helvetica", "normal");
+            doc.text(`Waktu Pembaruan: ${globalRawData.tanggal} (${globalRawData.waktu})`, 14, 26);
+
+            const tableRows = globalWilayahList.map(w => [w.nama, w.status, w.kesesuaian_iklim, w.ffmc, w.dmc, w.dc, w.fwi]);
+            doc.autoTable({
+                startY: 38, head: [['Kab/Kota', 'Status Risiko', 'Kesesuaian Iklim', 'FFMC', 'DMC', 'DC', 'FWI']],
+                body: tableRows, theme: 'striped',
+                headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255] }
+            });
             doc.save(`Laporan_MAHAKAM_FireWatch_${globalRawData.tanggal.replace(/ /g, "_")}.pdf`);
         });
     </script>
