@@ -602,15 +602,21 @@
                 globalWilayahList = globalRawData.tabel_wilayah || globalRawData.wilayah || globalRawData.data || globalRawData.kabupaten || [];
 
                 const tgl = globalRawData.tanggal || docId;
-                const wkt = globalRawData.waktu || globalRawData.last_updated || "WITA";
+                const rawWkt = globalRawData.waktu || globalRawData.last_updated || "";
                 
-                // MENGEMBALIKAN LOGIKA PEMFORMATAN WAKTU ASLI LENGKAP
-                if (globalRawData.tanggal && globalRawData.waktu) {
-                    currentWaktuDisplay = `${globalRawData.tanggal} (${globalRawData.waktu})`;
-                } else if (globalRawData.waktu) {
-                    currentWaktuDisplay = `${tgl} (${globalRawData.waktu})`;
+                // MENGEKSTRAKSI HANYA DETAIL JAM SAJA UNTUK DI DALAM KURUNG
+                let detailJam = "";
+                if (rawWkt.includes(tgl)) {
+                    detailJam = rawWkt.replace(tgl, "").trim();
                 } else {
-                    currentWaktuDisplay = `${tgl} (${wkt})`;
+                    detailJam = rawWkt.trim();
+                }
+
+                // Format akhir: Tanggal (Detail Jam) -> Contoh: 2026-08-01 (17:59:34 WITA)
+                if (detailJam) {
+                    currentWaktuDisplay = `${tgl} (${detailJam})`;
+                } else {
+                    currentWaktuDisplay = `${tgl} (WITA)`;
                 }
 
                 document.getElementById('update-waktu').innerText = currentWaktuDisplay;
