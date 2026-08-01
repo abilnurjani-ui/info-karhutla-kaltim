@@ -1,6 +1,118 @@
 {
-    "last_updated": "2026-08-01 08:23:16 WITA",
-    "date": "2026-08-01",
-    "status": "Active Monitoring",
-    "region": "Kalimantan Timur"
+    "tanggal": "01 Agustus 2026",
+    "waktu": "16:58 WITA",
+    "tabel_wilayah": [
+        {
+            "nama": "Paser",
+            "lat": -1.8974,
+            "lon": 116.0975,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (>91.5)",
+            "dmc": "Sangat Tinggi (>60.0)",
+            "dc": "Tinggi (>300)",
+            "fwi": "Sangat Tinggi (>28.0)"
+        },
+        {
+            "nama": "Penajam Paser Utara",
+            "lat": -1.2588,
+            "lon": 116.5772,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (>91.5)",
+            "dmc": "Sangat Tinggi (>60.0)",
+            "dc": "Tinggi (>300)",
+            "fwi": "Sangat Tinggi (>28.0)"
+        },
+        {
+            "nama": "Balikpapan",
+            "lat": -1.2379,
+            "lon": 116.8529,
+            "status": "Sangat Rawan",
+            "kesesuaian_iklim": "Sangat Sesuai (Tinggi)",
+            "ffmc": "Sangat Tinggi (>91.5)",
+            "dmc": "Sangat Tinggi (>60.0)",
+            "dc": "Tinggi (>300)",
+            "fwi": "Sangat Tinggi (>28.0)"
+        },
+        {
+            "nama": "Samarinda",
+            "lat": -0.5021,
+            "lon": 117.1536,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Kutai Kartanegara",
+            "lat": -0.4439,
+            "lon": 116.9813,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Bontang",
+            "lat": 0.1333,
+            "lon": 117.5,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Kutai Timur",
+            "lat": 0.5387,
+            "lon": 117.5886,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Kutai Barat",
+            "lat": -0.2311,
+            "lon": 115.698,
+            "status": "Aman",
+            "kesesuaian_iklim": "Kurang Sesuai (Rendah)",
+            "ffmc": "Rendah (<80.0)",
+            "dmc": "Rendah (<20.0)",
+            "dc": "Rendah (<200)",
+            "fwi": "Rendah (<2.0)"
+        },
+        {
+            "nama": "Berau",
+            "lat": 2.1523,
+            "lon": 117.398,
+            "status": "Waspada",
+            "kesesuaian_iklim": "Sesuai (Sedang)",
+            "ffmc": "Tinggi (87.5-91.5)",
+            "dmc": "Sedang (20-40)",
+            "dc": "Rendah (<200)",
+            "fwi": "Sedang (2.0-13.0)"
+        },
+        {
+            "nama": "Mahakam Ulu",
+            "lat": 0.6023,
+            "lon": 114.908,
+            "status": "Aman",
+            "kesesuaian_iklim": "Kurang Sesuai (Rendah)",
+            "ffmc": "Rendah (<80.0)",
+            "dmc": "Rendah (<20.0)",
+            "dc": "Rendah (<200)",
+            "fwi": "Rendah (<2.0)"
+        }
+    ],
+    "ringkasan": "Update Integrasi BMKG Cuaca & Iklim (01 Agustus 2026 16:58 WITA): Dari 10 wilayah Kaltim, terdeteksi 3 wilayah dengan status Sangat Rawan & Indeks Iklim 'Sangat Sesuai' untuk kemunculan titik panas, 5 Waspada, dan 2 Aman. Klaster risiko tinggi terkonsentrasi di sektor selatan (Paser, PPU, Balikpapan).",
+    "rekomendasi": "1. Tingkatkan siaga darurat pada area dengan Indeks Kesesuaian Iklim 'Sangat Sesuai' (Paser, PPU, Balikpapan).\n2. Aktifkan pemantauan satelit TERRA/AQUA & SNPP secara real-time untuk mendeteksi pembentukan awal titik panas (hotspot).\n3. Lakukan ground-check dan pembatasan aktivitas pembukaan lahan di area berisiko."
 }
