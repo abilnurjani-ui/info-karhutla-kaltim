@@ -17,17 +17,17 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Chart.js CDN (Pustaka Grafik) -->
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- jsPDF & AutoTable CDN (Untuk Export PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
-        /* Style kustom untuk Marker Api */
-        .custom-fire-marker {
-            background: transparent;
-            border: none;
-        }
+        .custom-fire-marker { background: transparent; border: none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -93,10 +93,8 @@
             </div>
         </div>
 
-        <!-- Section Visualisasi: Grid Peta (2 Col) + Donut Chart (1 Col) -->
+        <!-- Section Visualisasi: Peta + Donut Chart -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Peta Interaktif dengan Layer Switcher (Lg: 2 Cols) -->
             <section class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                     <div>
@@ -109,7 +107,6 @@
                 </div>
             </section>
 
-            <!-- Grafik Donut Distribusi Risiko (Lg: 1 Col) -->
             <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-wider mb-1">
@@ -130,16 +127,57 @@
                     <span class="text-xs font-medium text-slate-400">Total Wilayah Dipantau: <b class="text-slate-700">10 Kab/Kota</b></span>
                 </div>
             </section>
-
         </div>
 
-        <!-- Section Tabel Data Wilayah -->
+        <!-- Section Tabel Data dengan Toolbar Filter & Export -->
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div class="p-5 border-b border-slate-100">
-                <h2 class="text-lg font-bold text-slate-900">Tabel Integrasi Parameter FDRS & Kesesuaian Iklim</h2>
+            <!-- Header & Toolbar Actions -->
+            <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Tabel Integrasi Parameter FDRS & Kesesuaian Iklim</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Cari, filter, atau unduh laporan data wilayah di bawah ini.</p>
+                </div>
+
+                <!-- Action Controls: Search, Filter, Export Buttons -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <!-- Input Search -->
+                    <div class="relative flex-1 sm:w-48">
+                        <input type="text" id="search-input" placeholder="Cari wilayah..." 
+                            class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Dropdown Filter Status -->
+                    <select id="filter-status" class="py-1.5 px-3 text-xs rounded-xl border border-slate-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ALL">Semua Status</option>
+                        <option value="Sangat Rawan">Sangat Rawan</option>
+                        <option value="Waspada">Waspada</option>
+                        <option value="Aman">Aman</option>
+                    </select>
+
+                    <!-- Tombol Export CSV -->
+                    <button id="btn-export-csv" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        CSV
+                    </button>
+
+                    <!-- Tombol Export PDF -->
+                    <button id="btn-export-pdf" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                        </svg>
+                        Laporan PDF
+                    </button>
+                </div>
             </div>
+
+            <!-- Tabel Data -->
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm">
+                <table class="w-full text-left border-collapse text-sm" id="data-table">
                     <thead>
                         <tr class="bg-slate-50/80 border-b border-slate-200/80 text-xs font-bold text-slate-500 uppercase tracking-wider">
                             <th class="px-6 py-4">Kabupaten / Kota</th>
@@ -185,31 +223,25 @@
 
     <!-- Script Logika Frontend -->
     <script>
-        // 1. Inisialisasi Layer Peta
-        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap | BMKG'
-        });
+        // Store Global Data
+        let globalRawData = null;
+        let globalWilayahList = [];
 
+        // 1. Inisialisasi Peta
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18, attribution: '© OpenStreetMap | BMKG'
+        });
         const esriSatLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18,
-            attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP'
+            maxZoom: 18, attribution: 'Tiles © Esri'
         });
 
         const map = L.map('map', {
-            zoomControl: true,
-            scrollWheelZoom: false,
-            layers: [osmLayer] // Layer bawaan (Default)
+            zoomControl: true, scrollWheelZoom: false, layers: [osmLayer]
         }).setView([-0.4948, 117.1436], 7);
 
-        // Control Layer Switcher (Toggle OSM vs Satelit)
-        const baseMaps = {
-            "Peta Jalan (OSM)": osmLayer,
-            "Satelit (Esri)": esriSatLayer
-        };
-        L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
+        L.control.layers({ "Peta Jalan (OSM)": osmLayer, "Satelit (Esri)": esriSatLayer }, null, { position: 'topright' }).addTo(map);
 
-        // 2. Fungsi Pembuat Ikon Api SVG Custom
+        // 2. Custom Fire Marker
         function createCustomFireIcon(colorHex) {
             const svgHtml = `
                 <div class="relative flex items-center justify-center w-8 h-8">
@@ -219,72 +251,83 @@
                     </svg>
                 </div>
             `;
-            return L.divIcon({
-                html: svgHtml,
-                className: 'custom-fire-marker',
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32]
+            return L.divIcon({ html: svgHtml, className: 'custom-fire-marker', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
+        }
+
+        let riskChartInstance = null;
+
+        // 3. Render Tabel dengan Filter
+        function renderTable(listData) {
+            const tableBody = document.getElementById('tabel-body');
+            tableBody.innerHTML = '';
+
+            if (listData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Tidak ada data wilayah yang sesuai.</td></tr>`;
+                return;
+            }
+
+            listData.forEach(item => {
+                let badgeClass = '';
+                if (item.status === 'Sangat Rawan') badgeClass = 'bg-rose-100 text-rose-800 border-rose-200';
+                else if (item.status === 'Waspada') badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
+                else badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+                const row = `
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        <td class="px-6 py-4 font-bold text-slate-900">${item.nama}</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border inline-block ${badgeClass}">
+                                ${item.status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center font-semibold text-slate-700">${item.kesesuaian_iklim}</td>
+                        <td class="px-6 py-4 text-center text-slate-600">${item.ffmc}</td>
+                        <td class="px-6 py-4 text-center text-slate-600">${item.dmc}</td>
+                        <td class="px-6 py-4 text-center text-slate-600">${item.dc}</td>
+                        <td class="px-6 py-4 text-center text-slate-700 font-bold">${item.fwi}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
             });
         }
 
-        // Variable untuk menyimpan instance chart
-        let riskChartInstance = null;
+        // 4. Logika Filter & Search
+        function applyTableFilters() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const statusFilter = document.getElementById('filter-status').value;
 
-        // 3. Fetch Data JSON
+            const filtered = globalWilayahList.filter(item => {
+                const matchName = item.nama.toLowerCase().includes(query);
+                const matchStatus = (statusFilter === 'ALL') || (item.status === statusFilter);
+                return matchName && matchStatus;
+            });
+
+            renderTable(filtered);
+        }
+
+        document.getElementById('search-input').addEventListener('input', applyTableFilters);
+        document.getElementById('filter-status').addEventListener('change', applyTableFilters);
+
+        // 5. Fetch Data Utama
         fetch('data_karhutla.json')
             .then(res => res.json())
             .then(data => {
+                globalRawData = data;
+                globalWilayahList = data.tabel_wilayah;
+
                 document.getElementById('update-waktu').innerText = data.tanggal + " (" + data.waktu + ")";
                 document.getElementById('ringkasan-analisis').innerText = data.ringkasan;
                 document.getElementById('rekomendasi-publik').innerText = data.rekomendasi;
 
-                const tableBody = document.getElementById('tabel-body');
-                tableBody.innerHTML = '';
+                renderTable(globalWilayahList);
 
                 let statusCounts = { "Sangat Rawan": 0, "Waspada": 0, "Aman": 0 };
 
-                data.tabel_wilayah.forEach(item => {
-                    let badgeClass = '';
-                    let colorHex = '';
+                globalWilayahList.forEach(item => {
+                    if (statusCounts[item.status] !== undefined) statusCounts[item.status]++;
 
-                    // Hitung jumlah untuk Chart.js
-                    if (statusCounts[item.status] !== undefined) {
-                        statusCounts[item.status]++;
-                    }
-
-                    if (item.status === 'Sangat Rawan') {
-                        badgeClass = 'bg-rose-100 text-rose-800 border-rose-200';
-                        colorHex = '#f43f5e'; // Rose 500
-                    } else if (item.status === 'Waspada') {
-                        badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
-                        colorHex = '#f59e0b'; // Amber 500
-                    } else {
-                        badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-                        colorHex = '#10b981'; // Emerald 500
-                    }
-
-                    // Render Baris Tabel
-                    const row = `
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="px-6 py-4 font-bold text-slate-900">${item.nama}</td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold border inline-block ${badgeClass}">
-                                    ${item.status}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">${item.kesesuaian_iklim}</td>
-                            <td class="px-6 py-4 text-center text-slate-600">${item.ffmc}</td>
-                            <td class="px-6 py-4 text-center text-slate-600">${item.dmc}</td>
-                            <td class="px-6 py-4 text-center text-slate-600">${item.dc}</td>
-                            <td class="px-6 py-4 text-center text-slate-700 font-bold">${item.fwi}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-
-                    // Render Custom Marker Ikon Api di Peta
-                    const fireIcon = createCustomFireIcon(colorHex);
-                    const marker = L.marker([item.lat, item.lon], { icon: fireIcon }).addTo(map);
+                    let colorHex = (item.status === 'Sangat Rawan') ? '#f43f5e' : (item.status === 'Waspada') ? '#f59e0b' : '#10b981';
+                    const marker = L.marker([item.lat, item.lon], { icon: createCustomFireIcon(colorHex) }).addTo(map);
 
                     marker.bindPopup(`
                         <div class="p-1 font-sans text-slate-800">
@@ -299,7 +342,7 @@
                     `);
                 });
 
-                // 4. Inisialisasi Grafik Donut (Chart.js)
+                // Render Chart.js
                 const ctx = document.getElementById('riskChart').getContext('2d');
                 if (riskChartInstance) riskChartInstance.destroy();
 
@@ -308,47 +351,98 @@
                     data: {
                         labels: ['Sangat Rawan', 'Waspada', 'Aman'],
                         datasets: [{
-                            data: [
-                                statusCounts['Sangat Rawan'],
-                                statusCounts['Waspada'],
-                                statusCounts['Aman']
-                            ],
+                            data: [statusCounts['Sangat Rawan'], statusCounts['Waspada'], statusCounts['Aman']],
                             backgroundColor: ['#f43f5e', '#f59e0b', '#10b981'],
-                            borderWidth: 3,
-                            borderColor: '#ffffff',
-                            hoverOffset: 6
+                            borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
+                        responsive: true, maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
-                                    padding: 16,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        let value = context.raw;
-                                        let percentage = Math.round((value / total) * 100);
-                                        return ` ${context.label}: ${value} Wilayah (${percentage}%)`;
-                                    }
-                                }
-                            }
+                            legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' }, padding: 16, usePointStyle: true } }
                         },
                         cutout: '68%'
                     }
                 });
+            });
 
-            })
-            .catch(err => console.error("Gagal memuat data:", err));
+        // 6. Export to CSV Logic
+        document.getElementById('btn-export-csv').addEventListener('click', () => {
+            if (!globalWilayahList.length) return;
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Kabupaten/Kota,Status Risiko,Kesesuaian Iklim Hotspot,FFMC,DMC,DC,FWI\n";
+
+            globalWilayahList.forEach(item => {
+                let row = `"${item.nama}","${item.status}","${item.kesesuaian_iklim}","${item.ffmc}","${item.dmc}","${item.dc}","${item.fwi}"`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `MAHAKAM_FireWatch_${globalRawData.tanggal.replace(/ /g, "_")}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // 7. Export to PDF Logic (jsPDF + AutoTable)
+        document.getElementById('btn-export-pdf').addEventListener('click', () => {
+            if (!globalRawData) return;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            // Header Dokumen
+            doc.setFillColor(15, 23, 42); // Dark Slate Header
+            doc.rect(0, 0, 210, 32, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text("MAHAKAM FireWatch - Laporan Karhutla", 14, 15);
+
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.text("Sistem Pemantauan Risiko Karhutla Real-Time Kalimantan Timur (BMKG)", 14, 22);
+            doc.text(`Update Data: ${globalRawData.tanggal} (${globalRawData.waktu})`, 14, 27);
+
+            // Ringkasan Teks
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Ringkasan Analisis Meteorologi:", 14, 42);
+
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            const splitAnalisis = doc.splitTextToSize(globalRawData.ringkasan, 182);
+            doc.text(splitAnalisis, 14, 48);
+
+            let currentY = 48 + (splitAnalisis.length * 5) + 5;
+
+            // Render AutoTable
+            const tableRows = globalWilayahList.map(w => [
+                w.nama, w.status, w.kesesuaian_iklim, w.ffmc, w.dmc, w.dc, w.fwi
+            ]);
+
+            doc.autoTable({
+                startY: currentY,
+                head: [['Kab/Kota', 'Status Risiko', 'Kesesuaian Iklim', 'FFMC', 'DMC', 'DC', 'FWI']],
+                body: tableRows,
+                theme: 'striped',
+                headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 8, cellPadding: 2.5 },
+                columnStyles: {
+                    0: { fontStyle: 'bold' },
+                    1: { halign: 'center' },
+                    2: { halign: 'center' }
+                }
+            });
+
+            // Download PDF File
+            doc.save(`Laporan_MAHAKAM_FireWatch_${globalRawData.tanggal.replace(/ /g, "_")}.pdf`);
+        });
     </script>
 </body>
 </html>
