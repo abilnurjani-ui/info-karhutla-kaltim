@@ -23,9 +23,11 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 urllib3
+          pip install requests beautifulsoup4 urllib3 firebase-admin
 
       - name: Run Script Scraper
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: python main.py
 
       - name: Commit and Push Changes
