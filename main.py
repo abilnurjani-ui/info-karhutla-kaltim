@@ -3,11 +3,12 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timezone, timedelta
 import json
 import urllib3
+import os
 
-# Matikan peringatan SSL
+# Matikan peringatan SSL BMKG
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# 1. Waktu WITA
+# 1. Setting Waktu WITA Real-time
 wita_tz = timezone(timedelta(hours=8))
 now = datetime.now(wita_tz)
 
@@ -20,8 +21,9 @@ bulan_indo = {
 
 tanggal_str = now.strftime("%d ") + bulan_indo[now.strftime("%B")] + now.strftime(" %Y")
 waktu_str = now.strftime("%H:%M WITA")
+iso_date_str = now.strftime("%Y-%m-%d") # Format YYYY-MM-DD untuk nama file histori
 
-# 2. Pemetaan 10 Kab/Kota Kaltim
+# 2. Daftar Pemetaan 10 Kabupaten / Kota Kalimantan Timur
 kabkota_kaltim = [
     {"nama": "Paser", "lat": -1.8974, "lon": 116.0975, "zona": "selatan"},
     {"nama": "Penajam Paser Utara", "lat": -1.2588, "lon": 116.5772, "zona": "selatan"},
@@ -35,7 +37,7 @@ kabkota_kaltim = [
     {"nama": "Mahakam Ulu", "lat": 0.6023, "lon": 114.9080, "zona": "barat"}
 ]
 
-# 3. Scraping Data BMKG Cuaca & BMKG Iklim (Multisource)
+# 3. Scraping Data Real-time dari BMKG
 urls = [
     "https://stamet-samarinda.bmkg.go.id/cuaca/karhutla",
     "https://www.bmkg.go.id/cuaca/karhutla",
@@ -53,11 +55,10 @@ for url in urls:
     except Exception as e:
         print(f"⚠️ Peringatan: Gagal menjangkau {url}: {e}")
 
-# Deteksi Sinyal Krisis Cuaca & Iklim
 is_krisis_cuaca = ("sangat mudah" in combined_text) or ("sangat tinggi" in combined_text)
 is_krisis_iklim = ("sangat sesuai" in combined_text) or ("potensi tinggi" in combined_text) or ("kering" in combined_text)
 
-# 4. Evaluasi Parameter FDRS & Indeks Kesesuaian Iklim Hotspot
+# 4. Evaluasi Parameter FDRS & Iklim
 tabel_wilayah = []
 rawan_c, waspada_c, aman_c = 0, 0, 0
 
@@ -90,16 +91,24 @@ for item in kabkota_kaltim:
         "fwi": fwi
     })
 
-# 5. Output JSON
+# 5. Struktur JSON Output
 data_json = {
+    "iso_date": iso_date_str,
     "tanggal": tanggal_str,
     "waktu": waktu_str,
-    "tabel_wilayah": tabel_wilayah,
     "ringkasan": f"Update Integrasi BMKG Cuaca & Iklim ({tanggal_str} {waktu_str}): Dari 10 wilayah Kaltim, terdeteksi {rawan_c} wilayah dengan status Sangat Rawan & Indeks Iklim 'Sangat Sesuai' untuk kemunculan titik panas, {waspada_c} Waspada, dan {aman_c} Aman. Klaster risiko tinggi terkonsentrasi di sektor selatan (Paser, PPU, Balikpapan).",
-    "rekomendasi": "1. Tingkatkan siaga darurat pada area dengan Indeks Kesesuaian Iklim 'Sangat Sesuai' (Paser, PPU, Balikpapan).\n2. Aktifkan pemantauan satelit TERRA/AQUA & SNPP secara real-time untuk mendeteksi pembentukan awal titik panas (hotspot).\n3. Lakukan ground-check dan pembatasan aktivitas pembukaan lahan di area berisiko."
+    "rekomendasi": "1. Tingkatkan siaga darurat pada area dengan Indeks Kesesuaian Iklim 'Sangat Sesuai' (Paser, PPU, Balikpapan).\n2. Aktifkan pemantauan satelit TERRA/AQUA & SNPP secara real-time untuk mendeteksi pembentukan awal titik panas (hotspot).\n3. Lakukan ground-check dan pembatasan aktivitas pembukaan lahan di area berisiko.",
+    "tabel_wilayah": tabel_wilayah
 }
 
+# A. Simpan File Live Dashboard (data_karhutla.json)
 with open('data_karhutla.json', 'w', encoding='utf-8') as f:
     json.dump(data_json, f, indent=4, ensure_ascii=False)
 
-print("✅ BERHASIL: Parameter Kesesuaian Iklim BMKG berhasil diproses ke JSON!")
+# B. Simpan ke Folder Arsip Histori (history/YYYY-MM-DD.json)
+os.makedirs('history', exist_ok=True)
+history_file = f"history/{iso_date_str}.json"
+with open(history_file, 'w', encoding='utf-8') as f:
+    json.dump(data_json, f, indent=4, ensure_ascii=False)
+
+print(f"✅ Berhasil memperbarui data_karhutla.json dan arsip {history_file}")
