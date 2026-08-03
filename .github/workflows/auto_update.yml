@@ -2,9 +2,11 @@ name: Auto Update Data Karhutla
 
 on:
   schedule:
-    # 00:00 UTC = 08:00 WITA (Pagi)
-    # 12:00 UTC = 20:00 WITA (Malam)
-    - cron: '0 0,12 * * *'
+    # Menggunakan menit acak (17 & 34) untuk menghindari penundaan jam sibuk (peak-hour delay) GitHub
+    # 23:57 UTC = 07:57 WITA (Pagi)
+    # 11:34 UTC = 19:34 WITA (Malam)
+    - cron: '57 23 * * *'
+    - cron: '34 11 * * *'
   workflow_dispatch:
 
 permissions:
@@ -28,6 +30,8 @@ jobs:
           pip install requests beautifulsoup4 urllib3 google-cloud-firestore google-auth
 
       - name: Run Script Scraper
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: python main.py
 
       - name: Commit and Push Changes
@@ -35,5 +39,5 @@ jobs:
           git config --global user.name "GitHub Automation"
           git config --global user.email "actions@github.com"
           git add data_karhutla.json
-          git commit -m "Auto-update data karhutla & time-series log [skip ci]" || exit 0
+          git commit -m "Auto-update data karhutla: $(date +'%Y-%m-%d %H:%M:%S') [skip ci]" || exit 0
           git push
