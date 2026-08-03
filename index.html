@@ -614,9 +614,17 @@
                 const tgl = globalRawData.iso_date || docId;
                 const rawWkt = globalRawData.last_updated || globalRawData.waktu || "";
                 
-                // Menyiapkan string tampilan jam & tanggal terkini
-                if (rawWkt) {
-                    currentWaktuDisplay = rawWkt;
+                // MENGOLAH STRUKTUR DETAIL JAM AGAR BERADA DI DALAM TANDA KURUNG
+                let detailJam = "";
+                if (rawWkt.includes(tgl)) {
+                    detailJam = rawWkt.replace(tgl, "").trim();
+                } else {
+                    detailJam = rawWkt.trim();
+                }
+
+                // Hasil Tampilan Akhir: "2026-08-03 (20:34:12 WITA)"
+                if (detailJam) {
+                    currentWaktuDisplay = `${tgl} (${detailJam})`;
                 } else {
                     currentWaktuDisplay = `${tgl} (WITA)`;
                 }
