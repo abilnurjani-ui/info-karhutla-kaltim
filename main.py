@@ -5,7 +5,7 @@ from datetime import datetime, timezone, timedelta
 from google.auth.credentials import AnonymousCredentials
 from google.oauth2 import service_account
 from google.cloud import firestore
-from google import genai
+import google.generativeai as genai
 
 # ==========================================
 # 1. PERSIAPAN WAKTU (WITA / UTC+8)
@@ -79,7 +79,7 @@ for wil in WILAYAH_KALTIM:
     })
 
 # ==========================================
-# 4. GENERATOR ANALISIS AI VIA GEMINI SDK
+# 4. GENERATOR ANALISIS AI VIA GEMINI API
 # ==========================================
 def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
     print("🤖 Menghubungi Gemini AI untuk menganalisis data Karhutla...")
@@ -93,7 +93,8 @@ def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
         )
 
     try:
-        client = genai.Client(api_key=api_key)
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
 
         prompt = f"""
         Anda adalah Sistem pakar Kebakaran Hutan dan Lahan (Karhutla) dari BMKG & BPBD Kalimantan Timur.
@@ -111,11 +112,7 @@ def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
         {{"ringkasan": "teks narasi...", "rekomendasi": "1. poin satu\\n2. poin dua\\n3. poin tiga"}}
         """
 
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt
-        )
-
+        response = model.generate_content(prompt)
         text_clean = response.text.strip().replace("```json", "").replace("```", "")
         res_json = json.loads(text_clean)
 
