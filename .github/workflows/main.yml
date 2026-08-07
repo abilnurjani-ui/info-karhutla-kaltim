@@ -1,9 +1,7 @@
-name: Auto Update Data Karhutla
+name: Auto Update
 
 on:
   schedule:
-    # 00:17 UTC = 08:17 WITA (Pagi)
-    # 12:34 UTC = 20:34 WITA (Malam)
     - cron: '17 0 * * *'
     - cron: '34 12 * * *'
   workflow_dispatch:
@@ -26,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 urllib3 google-cloud-firestore google-auth google-genai
+          pip install requests beautifulsoup4 urllib3 google-cloud-firestore google-auth google-generativeai
 
       - name: Run Script Scraper with Gemini AI
         env:
