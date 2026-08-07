@@ -79,14 +79,14 @@ for wil in WILAYAH_KALTIM:
     })
 
 # ==========================================
-# 4. GENERATOR ANALISIS AI VIA GEMINI API
+# 4. GENERATOR ANALISIS DETIL VIA GEMINI AI
 # ==========================================
 def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
     print("🤖 Menghubungi Gemini AI untuk menganalisis data Karhutla...")
     api_key = os.environ.get("GEMINI_API_KEY")
 
     if not api_key:
-        print("⚠️ GEMINI_API_KEY tidak ditemukan. Menggunakan analisis fallback.")
+        print("⚠️ GEMINI_API_KEY tidak ditemukan di environment variable.")
         return (
             f"Pemantauan Karhutla Kalimantan Timur per {waktu_str} menunjukkan variasi tingkat kerawanan berdasarkan indeks FDRS BMKG.",
             "1. Tingkatkan patroli rutin pada daerah berstatus Waspada & Sangat Rawan.\n2. Koordinasi bersama BPBD dan BMKG.\n3. Dilarang membakar lahan."
@@ -94,29 +94,44 @@ def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
 
     try:
         genai.configure(api_key=api_key)
+        
+        # Menggunakan model gemini-1.5-flash untuk kecepatan & keandalan JSON
         model = genai.GenerativeModel('gemini-1.5-flash')
 
         prompt = f"""
-        Anda adalah Sistem pakar Kebakaran Hutan dan Lahan (Karhutla) dari BMKG & BPBD Kalimantan Timur.
-        Berikut adalah data monitoring real-time per {waktu_str}:
-        
-        DATA WILAYAH:
+        Anda adalah Senior Analis Meteorologi dan Karhutla dari BMKG & Pusdalops BPBD Kalimantan Timur.
+        Analisis data monitoring FDRS real-time per {waktu_str} berikut secara mendalam:
+
+        DATA EVALUASI WILAYAH:
         {json.dumps(data_wilayah, indent=2)}
 
-        TUGAS ANDA:
-        Hasilkan respon dalam format JSON MURNI (tanpa markdown ```json) dengan 2 key:
-        1. "ringkasan": Narasi 2-3 kalimat penjelasan kondisi spasial, meteorologi, dan daerah mana yang paling krusial mendapat perhatian.
-        2. "rekomendasi": 3 poin instruksi taktis operasional bernomor (1, 2, 3) untuk petugas pemadam/masyarakat di lapangan.
+        PETUNJUK ANALISIS:
+        - Identifikasi kabupaten/kota mana saja yang berstatus 'Sangat Rawan' atau 'Waspada' secara spesifik. Sebutkan nama daerahnya!
+        - Soroti nilai Indeks Cuaca Kebakaran (FWI) dan Kode Kekeringan Gambut (DC) yang tinggi.
+        - Jelaskan implikasi kondisi cuaca tersebut terhadap potensi jilatan api dan kebakaran lahan gambut di wilayah Kaltim.
 
-        Contoh format output wajib:
-        {{"ringkasan": "teks narasi...", "rekomendasi": "1. poin satu\\n2. poin dua\\n3. poin tiga"}}
+        FORMAT OUTPUT:
+        Kembalikan HANYA teks string JSON MURNI tanpa markdown (tanpa ```json ... ```) dengan 2 key:
+        1. "ringkasan": Narasi komprehensif 2-3 paragraf pendek yang detail, teknis, dan menyebutkan nama-nama kabupaten/kota yang perlu diwaspadai beserta alasannya.
+        2. "rekomendasi": Minimal 3-4 poin langkah taktis operasional spesifik bernomor (1., 2., 3., 4.) untuk tim Manggala Agni, BPBD, dan masyarakat setempat.
+
+        Contoh format valid:
+        {{"ringkasan": "Paragraf 1...\\n\\nParagraf 2...", "rekomendasi": "1. Poin satu\\n2. Poin dua\\n3. Poin tiga"}}
         """
 
         response = model.generate_content(prompt)
-        text_clean = response.text.strip().replace("```json", "").replace("```", "")
-        res_json = json.loads(text_clean)
+        raw_text = response.text.strip()
+        
+        # Pembersihan tag markdown jika AI secara tidak sengaja menyertakannya
+        if raw_text.startswith("```"):
+            raw_text = raw_text.split("```")[1]
+            if raw_text.startswith("json"):
+                raw_text = raw_text[4:]
+        raw_text = raw_text.strip()
 
-        print("✨ Gemini AI berhasil merumuskan analisis dan rekomendasi!")
+        res_json = json.loads(raw_text)
+
+        print("✨ Gemini AI berhasil merumuskan analisis dan rekomendasi yang sangat rinci!")
         return res_json.get("ringkasan"), res_json.get("rekomendasi")
 
     except Exception as e:
