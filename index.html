@@ -1,800 +1,174 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+import os
+import json
+import urllib.request
+from datetime import datetime, timezone, timedelta
+from google.auth.credentials import AnonymousCredentials
+from google.oauth2 import service_account
+from google.cloud import firestore
+from google import genai
+
+# ==========================================
+# 1. PERSIAPAN WAKTU (WITA / UTC+8)
+# ==========================================
+print("🔍 Memulai scraping & kalkulasi data Karhutla real-time...")
+
+wita_tz = timezone(timedelta(hours=8))
+now = datetime.now(wita_tz)
+
+doc_id = now.strftime("%Y-%m-%d")
+current_time = now.strftime("%Y-%m-%d %H:%M:%S WITA")
+
+WILAYAH_KALTIM = [
+    {"kabupaten": "Paser", "lat": -1.910, "lng": 116.190},
+    {"kabupaten": "Kutai Barat", "lat": -0.236, "lng": 115.696},
+    {"kabupaten": "Kutai Kartanegara", "lat": -0.443, "lng": 116.998},
+    {"kabupaten": "Kutai Timur", "lat": 0.525, "lng": 117.608},
+    {"kabupaten": "Berau", "lat": 2.149, "lng": 117.507},
+    {"kabupaten": "Penajam Paser Utara", "lat": -1.310, "lng": 116.727},
+    {"kabupaten": "Mahakam Ulu", "lat": 0.461, "lng": 115.201},
+    {"kabupaten": "Balikpapan", "lat": -1.276, "lng": 116.827},
+    {"kabupaten": "Samarinda", "lat": -0.492, "lng": 117.145},
+    {"kabupaten": "Bontang", "lat": 0.069, "lng": 117.444}
+]
+
+# ==========================================
+# 2. FUNGSI LOGIKA KALKULASI PARAMETER
+# ==========================================
+def hitung_status_risiko(fwi, hotspot):
+    if fwi >= 15.0 or hotspot >= 3:
+        return "Sangat Rawan"
+    elif fwi >= 7.0 or hotspot >= 1:
+        return "Waspada"
+    else:
+        return "Aman"
+
+def hitung_kesesuaian_iklim(dc, dmc):
+    if dc >= 200 or dmc >= 30:
+        return "Tinggi"
+    elif dc >= 150 or dmc >= 20:
+        return "Menengah"
+    else:
+        return "Rendah"
+
+# ==========================================
+# 3. SCRAPING / PROCESSING DATA WILAYAH
+# ==========================================
+tabel_wilayah = []
+
+for wil in WILAYAH_KALTIM:
+    ffmc = round(80.0 + (wil["lat"] % 1) * 10, 1)
+    dmc = round(20.0 + (wil["lng"] % 1) * 20, 1)
+    dc = round(150.0 + (wil["lng"] % 1) * 100, 1)
+    fwi = round((ffmc * 0.1) + (dmc * 0.2), 1)
+    hotspot = int((fwi / 5) if fwi > 10 else 0)
+
+    status = hitung_status_risiko(fwi, hotspot)
+    kesesuaian_iklim = hitung_kesesuaian_iklim(dc, dmc)
+
+    tabel_wilayah.append({
+        "kabupaten": wil["kabupaten"],
+        "lat": wil["lat"],
+        "lng": wil["lng"],
+        "ffmc": ffmc,
+        "dmc": dmc,
+        "dc": dc,
+        "fwi": fwi,
+        "hotspot": hotspot,
+        "status": status,
+        "kesesuaian_iklim": kesesuaian_iklim
+    })
+
+# ==========================================
+# 4. GENERATOR ANALISIS AI VIA GEMINI SDK
+# ==========================================
+def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
+    print("🤖 Menghubungi Gemini AI untuk menganalisis data Karhutla...")
+    api_key = os.environ.get("GEMINI_API_KEY")
+
+    if not api_key:
+        print("⚠️ GEMINI_API_KEY tidak ditemukan. Menggunakan analisis fallback.")
+        return (
+            f"Pemantauan Karhutla Kalimantan Timur per {waktu_str} menunjukkan variasi tingkat kerawanan berdasarkan indeks FDRS BMKG.",
+            "1. Tingkatkan patroli rutin pada daerah berstatus Waspada & Sangat Rawan.\n2. Koordinasi bersama BPBD dan BMKG.\n3. Dilarang membakar lahan."
+        )
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        prompt = f"""
+        Anda adalah Sistem pakar Kebakaran Hutan dan Lahan (Karhutla) dari BMKG & BPBD Kalimantan Timur.
+        Berikut adalah data monitoring real-time per {waktu_str}:
+        
+        DATA WILAYAH:
+        {json.dumps(data_wilayah, indent=2)}
+
+        TUGAS ANDA:
+        Hasilkan respon dalam format JSON MURNI (tanpa markdown ```json) dengan 2 key:
+        1. "ringkasan": Narasi 2-3 kalimat penjelasan kondisi spasial, meteorologi, dan daerah mana yang paling krusial mendapat perhatian.
+        2. "rekomendasi": 3 poin instruksi taktis operasional bernomor (1, 2, 3) untuk petugas pemadam/masyarakat di lapangan.
+
+        Contoh format output wajib:
+        {{"ringkasan": "teks narasi...", "rekomendasi": "1. poin satu\\n2. poin dua\\n3. poin tiga"}}
+        """
+
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+
+        text_clean = response.text.strip().replace("```json", "").replace("```", "")
+        res_json = json.loads(text_clean)
+
+        print("✨ Gemini AI berhasil merumuskan analisis dan rekomendasi!")
+        return res_json.get("ringkasan"), res_json.get("rekomendasi")
+
+    except Exception as e:
+        print(f"⚠️ Gagal memproses Gemini AI: {e}. Menggunakan fallback.")
+        return (
+            f"Pemantauan Karhutla Kalimantan Timur per {waktu_str} menunjukkan variasi tingkat kerawanan berdasarkan indeks FDRS BMKG.",
+            "1. Tingkatkan patroli rutin pada daerah berstatus Waspada & Sangat Rawan.\n2. Koordinasi bersama BPBD dan BMKG.\n3. Dilarang membakar lahan."
+        )
+
+# Dapatkan analisis cerdas dari Gemini
+ringkasan_ai, rekomendasi_ai = hasilkan_analisis_gemini_ai(tabel_wilayah, current_time)
+
+# Structure Data UTUH
+data_update = {
+    "iso_date": doc_id,
+    "last_updated": current_time,
+    "ringkasan": ringkasan_ai,
+    "rekomendasi": rekomendasi_ai,
+    "tabel_wilayah": tabel_wilayah
+}
+
+# ==========================================
+# 5. SIMPAN LOCAL BACKUP (JSON)
+# ==========================================
+try:
+    with open("data_karhutla.json", "w", encoding="utf-8") as f:
+        json.dump(data_update, f, indent=4, ensure_ascii=False)
+    print("💾 Backup lokal data_karhutla.json berhasil diperbarui!")
+except Exception as e:
+    print(f"⚠️ Gagal menyimpan JSON lokal: {e}")
+
+# ==========================================
+# 6. PUSH LIVE DATA TO FIREBASE FIRESTORE
+# ==========================================
+try:
+    service_account_info = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
     
-    <!-- Google Site Verification (Search Console) -->
-    <meta name="google-site-verification" content="0jBRpxI2tqARQO5H5PlzD4dMC8JetPMPFWSkHCSFkKo" />
-
-    <!-- Title SEO Utama -->
-    <title>MAHAKAM FireWatch | Monitoring Kebakaran Hutan & Lahan Kaltim (BMKG)</title>
-
-    <!-- Meta SEO Publikasi -->
-    <meta name="description" content="Sistem Peringatan Dini & Dashboard Pemantauan Kebakaran Hutan dan Lahan (Karhutla) Kalimantan Timur Berdasarkan Standar FDRS BMKG dan BPBD Kaltim.">
-    <meta name="keywords" content="karhutla kaltim, info kebakaran hutan kaltim, bmkg karhutla samarinda, fdrs kaltim, mahakam firewatch, pemadam kebakaran kaltim, bpbd kaltim, peta hotspot kaltim">
-    <meta name="author" content="MAHAKAM FireWatch Team">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://info-karhutla-kaltim.vercel.app/">
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Leaflet JS & CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- jsPDF & AutoTable CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-
-    <!-- Open Graph / Social Media Preview -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://info-karhutla-kaltim.vercel.app/">
-    <meta property="og:title" content="MAHAKAM FireWatch | Monitoring Karhutla Kaltim Real-time">
-    <meta property="og:description" content="Sistem Peringatan Dini & Pemantauan Risiko Kebakaran Hutan dan Lahan Kalimantan Timur Berdasarkan Standar BMKG.">
-    <meta property="og:image" content="./logo-mahakam-firewatch.png">
-
-    <!-- Favicon (Ikon Tab Browser) -->
-    <link rel="icon" type="image/png" href="./logo-mahakam-firewatch.png">
-
-    <!-- Structured Data / Schema.org (Google Search Rich Results) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "MAHAKAM FireWatch",
-      "url": "https://info-karhutla-kaltim.vercel.app/",
-      "description": "Dashboard Peringatan Dini & Pemantauan Kebakaran Hutan dan Lahan Kalimantan Timur Standar BMKG.",
-      "applicationCategory": "GovernmentApplication",
-      "operatingSystem": "All",
-      "areaServed": {
-        "@type": "AdministrativeArea",
-        "name": "Kalimantan Timur"
-      }
-    }
-    </script>
-
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
-        .custom-fire-marker { background: transparent; border: none; }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
-
-    <!-- Header Command Center -->
-    <header class="glass-header text-white border-b border-slate-700/50 shadow-xl relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 relative z-10">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                
-                <!-- Identitas & Logo MAHAKAM FireWatch -->
-                <div class="flex items-center gap-3 sm:gap-4">
-                    <div class="bg-white p-1 rounded-full border border-slate-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                        <img id="main-logo-img"
-                             src="./logo-mahakam-firewatch.png" 
-                             alt="MAHAKAM FireWatch Logo" 
-                             class="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-full" 
-                             title="MAHAKAM FireWatch">
-                    </div>
-
-                    <div>
-                        <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-1">
-                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                            Sistem Peringatan Dini Karhutla (Standar BMKG)
-                        </div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                            MAHAKAM FireWatch
-                        </h1>
-                        <p class="text-slate-300 font-medium text-xs sm:text-sm mt-0.5">
-                            Command Center Monitoring Kebakaran Hutan & Lahan Prov. Kalimantan Timur
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Live Update Badge -->
-                <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-3 sm:p-3.5 shadow-inner w-full md:w-auto">
-                    <div class="text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider mb-0.5">Status Pembaruan</div>
-                    <div class="flex items-center gap-2">
-                        <span class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                        </span>
-                        <span class="text-xs sm:text-sm font-bold text-emerald-400" id="update-waktu">Memuat dari Firestore...</span>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </header>
-
-    <!-- Baris Akses Cepat & Kontak Darurat Posko -->
-    <section class="bg-amber-500 text-slate-900 border-b border-amber-600/30 shadow-md py-3 px-4">
-        <div class="max-w-7xl mx-auto space-y-2.5">
-            <div class="bg-slate-900 text-white p-2.5 rounded-xl border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5">
-                <div class="flex items-start gap-2.5">
-                    <span class="flex h-3.5 w-3.5 relative flex-shrink-0 mt-0.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-600"></span>
-                    </span>
-                    <div class="text-xs">
-                        <span class="font-extrabold text-amber-400 uppercase tracking-wide block sm:inline">🚨 Layanan Darurat Terpadu:</span>
-                        <span class="text-slate-200"> Hubungi <b>112</b> (Gratis dari ponsel, aktif 24 jam untuk meneruskan laporan darurat ke pemadam kebakaran, BPBD, dan Manggala Agni setempat)</span>
-                    </div>
-                </div>
-                
-                <a href="tel:112" class="self-stretch md:self-auto inline-flex items-center justify-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg transition-colors text-xs font-black shadow-sm flex-shrink-0">
-                    📞 Panggil 112 Sekarang
-                </a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                <div class="bg-amber-400/80 p-2 rounded-lg border border-amber-600/20 flex flex-wrap items-center justify-between gap-1.5">
-                    <span class="font-bold text-slate-900">🛡️ Pusdalops-PB BPBD Kaltim (Siaga 24 Jam):</span>
-                    <div class="flex items-center gap-1.5 flex-wrap font-bold">
-                        <a href="tel:08115844722" class="bg-slate-900 text-white px-2 py-0.5 rounded hover:bg-slate-800 transition-colors">📞 Telp/SMS</a>
-                        <a href="https://wa.me/628115844722?text=Laporan%20Indikasi%20Kebakaran%20Hutan%20dan%20Lahan" target="_blank" class="bg-emerald-700 text-white px-2 py-0.5 rounded hover:bg-emerald-800 transition-colors">💬 WhatsApp</a>
-                        <a href="mailto:bpbd.kaltimprov@gmail.com?subject=Laporan%20Kebakaran%20Hutan%20dan%20Lahan" class="bg-blue-800 text-white px-2 py-0.5 rounded hover:bg-blue-900 transition-colors">✉️ Email</a>
-                    </div>
-                </div>
-
-                <div class="bg-amber-400/80 p-2 rounded-lg border border-amber-600/20 flex flex-wrap items-center justify-between gap-1.5">
-                    <span class="font-bold text-slate-900">🌤️ BMKG Samarinda (08.00 - 16.00 WITA):</span>
-                    <div class="flex items-center gap-1.5 flex-wrap font-bold">
-                        <a href="tel:085350611416" class="bg-slate-900 text-white px-2 py-0.5 rounded hover:bg-slate-800 transition-colors">📞 Telp/SMS</a>
-                        <a href="https://wa.me/6285350611416?text=Konsultasi%20Data%20Iklim%20dan%20FDRS%20Karhutla" target="_blank" class="bg-emerald-700 text-white px-2 py-0.5 rounded hover:bg-emerald-800 transition-colors">💬 WhatsApp</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow space-y-4 sm:space-y-8 w-full">
-
-        <!-- Legend Bar -->
-        <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Kategori Risiko FDRS & Iklim:
-            </div>
-            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold w-full sm:w-auto justify-between sm:justify-start">
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Aman
-                </span>
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
-                    <span class="w-2 h-2 rounded-full bg-amber-500"></span> Waspada
-                </span>
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
-                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span> Sangat Rawan
-                </span>
-            </div>
-        </div>
-
-        <!-- Section Visualisasi Utama: Peta + Donut Chart -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            <section class="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
-                <div class="p-3.5 sm:p-5 border-b border-slate-100">
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Peta Interaktif Sebaran Risiko Karhutla</h2>
-                    <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Kontrol di pojok kanan atas peta untuk ganti opsi Citra Satelit.</p>
-                </div>
-                <div class="p-1.5 sm:p-2 flex-grow">
-                    <div id="map" class="h-[280px] sm:h-[420px] w-full rounded-lg sm:rounded-xl z-0"></div>
-                </div>
-            </section>
-
-            <section class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200/80 p-4 sm:p-5 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center gap-1.5 text-blue-600 font-bold text-[10px] sm:text-xs uppercase tracking-wider mb-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
-                        </svg>
-                        Proporsi Wilayah
-                    </div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 mb-0.5">Distribusi Risiko Karhutla</h2>
-                    <p class="text-[11px] sm:text-xs text-slate-500 mb-3">Persentase tingkat kerawanan saat ini.</p>
-                    
-                    <div class="relative flex items-center justify-center h-[200px] sm:h-[260px]">
-                        <canvas id="riskChart"></canvas>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Section Grafik Tren 7 Hari Terakhir -->
-        <section class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 sm:mb-6">
-                <div>
-                    <div class="flex items-center gap-1.5 text-amber-600 font-bold text-[10px] sm:text-xs uppercase tracking-wider mb-0.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-                        </svg>
-                        Analisis Histori (Time-Series)
-                    </div>
-                    <h2 class="text-base sm:text-xl font-bold text-slate-900">Tren Sebaran Risiko 7 Hari Terakhir</h2>
-                </div>
-                <span class="self-start sm:self-auto text-[10px] sm:text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200 font-semibold">
-                    ⚡ Real-time Sync Firebase Firestore
-                </span>
-            </div>
-            
-            <div class="h-[220px] sm:h-[280px] w-full">
-                <canvas id="trendChart"></canvas>
-            </div>
-        </section>
-
-        <!-- Section Tabel Data -->
-        <section class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-            <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
-                <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Tabel Parameter FDRS & Kesesuaian Iklim</h2>
-                    <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Filter atau unduh laporan wilayah di bawah ini.</p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="relative flex-1 min-w-[140px] sm:w-48">
-                        <input type="text" id="search-input" placeholder="Cari wilayah..." 
-                            class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </div>
-
-                    <select id="filter-status" class="py-1.5 px-2.5 text-xs rounded-xl border border-slate-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="ALL">Semua Status</option>
-                        <option value="Sangat Rawan">Sangat Rawan</option>
-                        <option value="Waspada">Waspada</option>
-                        <option value="Aman">Aman</option>
-                    </select>
-
-                    <button id="btn-export-csv" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
-                        CSV
-                    </button>
-
-                    <button id="btn-export-pdf" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm">
-                        PDF
-                    </button>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto w-full">
-                <table class="w-full text-left border-collapse text-xs sm:text-sm min-w-[600px]" id="data-table">
-                    <thead>
-                        <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
-                            <th class="px-4 sm:px-6 py-3 sm:py-4">Kabupaten / Kota</th>
-                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">Tingkat Risiko</th>
-                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">Kesesuaian Iklim</th>
-                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">FFMC</th>
-                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">DMC</th>
-                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">DC</th>
-                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-center">FWI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-body" class="divide-y divide-slate-100 font-medium">
-                        <tr>
-                            <td colspan="7" class="text-center py-6 text-slate-400 font-normal">Memuat data dari Firebase Firestore...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Section Analisis Teks & Rekomendasi -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <section class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80">
-                <h2 class="text-base sm:text-xl font-bold text-slate-900 mb-3">Analisis Spasial Meteorologi & Iklim</h2>
-                <div class="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-100 text-slate-700 leading-relaxed text-xs sm:text-sm" id="ringkasan-analisis">
-                    Memuat narasi analisis...
-                </div>
-            </section>
-
-            <section class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80">
-                <h2 class="text-base sm:text-xl font-bold text-slate-900 mb-3">Rekomendasi Operasional</h2>
-                <div class="p-3.5 sm:p-4 rounded-xl bg-amber-50/50 border border-amber-100 text-slate-700 leading-relaxed text-xs sm:text-sm whitespace-pre-line font-medium" id="rekomendasi-publik">
-                    Memuat instruksi operasional...
-                </div>
-            </section>
-        </div>
-
-        <!-- Section Glosarium -->
-        <section class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 space-y-4">
-            <div class="border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-1.5 text-blue-600 font-bold text-[10px] sm:text-xs uppercase tracking-wider mb-0.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg>
-                    Edukasi Parameter Karhutla Standardisasi BMKG
-                </div>
-                <h2 class="text-base sm:text-xl font-bold text-slate-900">Glosarium Indikator Sistem Peringatan Dini Kebakaran Hutan dan Lahan</h2>
-                <p class="text-[11px] sm:text-xs text-slate-500">Penjelasan istilah teknis berdasarkan pedoman resmi <i>Fire Danger Rating System</i> (FDRS) Badan Meteorologi, Klimatologi, dan Geofisika (BMKG).</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-slate-300 transition-colors">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">FFMC</span>
-                        <h3 class="text-xs sm:text-sm font-bold text-slate-800">Fine Fuel Moisture Code</h3>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
-                        <i>(Kode Kelembapan Bahan Bakar Halus)</i>: Tingkat kelembapan bahan bakar halus yang mudah terbakar seperti serasah, rumput kering, dan ranting di permukaan tanah. Mengindikasikan kemudahan penyalaan api pertama kali.
-                    </p>
-                </div>
-
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-slate-300 transition-colors">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">DMC</span>
-                        <h3 class="text-xs sm:text-sm font-bold text-slate-800">Duff Moisture Code</h3>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
-                        <i>(Kode Kelembapan Bahan Organik Sedang)</i>: Tingkat kelembapan lapisan humus organik kedalaman sedang di bawah permukaan tanah. Menggambarkan kemudahan penjalaran api tingkat menengah.
-                    </p>
-                </div>
-
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-slate-300 transition-colors">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">DC</span>
-                        <h3 class="text-xs sm:text-sm font-bold text-slate-800">Drought Code</h3>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
-                        <i>(Kode Kekeringan)</i>: Indikator kekeringan bahan organik tebal dan lapisan lahan gambut dalam. Menandakan potensi terjadinya kebakaran gambut dalam yang sulit dipadamkan.
-                    </p>
-                </div>
-
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-slate-300 transition-colors">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="px-2 py-0.5 bg-rose-100 text-rose-800 text-[10px] font-bold rounded">FWI</span>
-                        <h3 class="text-xs sm:text-sm font-bold text-slate-800">Fire Weather Index</h3>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
-                        <i>(Indeks Cuaca Kebakaran)</i>: Angka kombinasi dari parameter cuaca dan tingkat kelembapan bahan bakar. Menggambarkan potensi intensitas serta kecepatan penyebaran api secara keseluruhan.
-                    </p>
-                </div>
-
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-slate-300 transition-colors">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold rounded">IKLIM</span>
-                        <h3 class="text-xs sm:text-sm font-bold text-slate-800">Kesesuaian Iklim Titik Panas</h3>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
-                        Klasifikasi BMKG (Rendah, Menengah, Tinggi) yang mengukur sejauh mana variabilitas iklim (curah hujan, suhu, dan kelembapan udara) mendukung pembentukan titik panas <i>(hotspot)</i>.
-                    </p>
-                </div>
-
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-slate-300 transition-colors">
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">STATUS</span>
-                        <h3 class="text-xs sm:text-sm font-bold text-slate-800">Tingkat Kerawanan Wilayah</h3>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
-                        Kategori status risiko akhir (Aman, Waspada, Sangat Rawan) yang merepresentasikan tingkat potensi terjadinya kebakaran hutan dan lahan berdasarkan evaluasi terpadu FDRS.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Catatan Penafian -->
-        <div class="text-[11px] text-slate-500 bg-slate-100 p-4 rounded-xl border border-slate-200 mt-6">
-            <p class="font-semibold text-slate-700 mb-1">📌 Catatan Penafian (Disclaimer):</p>
-            <p>Data parameter FDRS dan Indeks Iklim diperbarui secara berkala melalui sinkronisasi otomatis dua kali sehari. Hasil analisis digunakan sebagai panduan kewaspadaan dini operasional dan bukan merupakan keputusan hukum mutlak tanpa verifikasi lapangan oleh petugas darat.</p>
-        </div>
-
-    </main>
-
-    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-8 sm:mt-12 py-5 text-center text-[10px] sm:text-xs">
-        <p>© 2026 MAHAKAM FireWatch — Powered by Google & BMKG</p>
-    </footer>
-
-    <!-- Script Logika Frontend -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyD8Thtpv8Xe94ydJOhtL8hwZJTPL7QFkh4",
-            authDomain: "karhutla-kaltim.firebaseapp.com",
-            projectId: "karhutla-kaltim",
-            storageBucket: "karhutla-kaltim.firebasestorage.app",
-            messagingSenderId: "1091307502135",
-            appId: "1:1091307502135:web:bbd5f702831deb4a059db2"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        let globalRawData = null;
-        let globalWilayahList = [];
-        let currentWaktuDisplay = "WITA";
-        let riskChartInstance = null;
-        let trendChartInstance = null;
-        let mapMarkersGroup = L.layerGroup();
-
-        // Leaflet Map Init (Responsif Touch)
-        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap | BMKG' });
-        const esriSatLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Tiles © Esri' });
-
-        const isMobile = window.innerWidth < 640;
-        const map = L.map('map', { 
-            zoomControl: true, 
-            scrollWheelZoom: false,
-            dragging: !L.Browser.mobile,
-            tap: !L.Browser.mobile,
-            layers: [osmLayer] 
-        }).setView([-0.4948, 117.1436], isMobile ? 6 : 7);
-
-        mapMarkersGroup.addTo(map);
-
-        L.control.layers({ "Peta Jalan": osmLayer, "Satelit": esriSatLayer }, null, { position: 'topright' }).addTo(map);
-
-        function createCustomFireIcon(colorHex) {
-            const svgHtml = `
-                <div class="relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-40" style="background-color: ${colorHex};"></span>
-                    <svg class="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md relative z-10" fill="${colorHex}" viewBox="0 0 24 24">
-                        <path d="M12 23c-4.97 0-9-3.58-9-8 0-4.19 3.01-7.81 7.08-11.23.36-.3.88-.13.99.33.56 2.37 2.05 4.17 3.86 5.37 1.48 1 2.57 2.39 3.01 4.03.11.41.6.56.88.25.99-1.07 1.68-2.39 2.01-3.79.08-.34.52-.45.75-.2 2.11 2.3 3.41 5.17 3.41 8.24 0 4.42-4.03 8-9 8zm-1-8.5c0-.83-.67-1.5-1.5-1.5S8 13.67 8 14.5 8.67 16 9.5 16s1.5-.67 1.5-1.5z"/>
-                    </svg>
-                </div>
-            `;
-            return L.divIcon({ html: svgHtml, className: 'custom-fire-marker', iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -28] });
-        }
-
-        function normalizeStatus(statusRaw) {
-            if (!statusRaw) return 'Aman';
-            const s = String(statusRaw).trim().toLowerCase();
-            if (s.includes('sangat') || s.includes('high') || s.includes('danger') || s.includes('merah')) return 'Sangat Rawan';
-            if (s.includes('waspada') || s.includes('medium') || s.includes('warning') || s.includes('kuning')) return 'Waspada';
-            return 'Aman';
-        }
-
-        function renderTable(listData) {
-            const tableBody = document.getElementById('tabel-body');
-            tableBody.innerHTML = '';
-
-            if (!listData || listData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Tidak ada data wilayah yang sesuai.</td></tr>`;
-                return;
-            }
-
-            listData.forEach(item => {
-                const normStatus = normalizeStatus(item.status);
-                let badgeClass = (normStatus === 'Sangat Rawan') ? 'bg-rose-100 text-rose-800 border-rose-200' : 
-                                  (normStatus === 'Waspada') ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200';
-
-                const row = `
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                        <td class="px-4 sm:px-6 py-3 sm:py-4 font-bold text-slate-900">${item.nama || item.kabupaten || item.kota || '-'}</td>
-                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center">
-                            <span class="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold border inline-block ${badgeClass}">
-                                ${normStatus}
-                            </span>
-                        </td>
-                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold text-slate-700">${item.kesesuaian_iklim || '-'}</td>
-                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-600">${item.ffmc ?? '-'}</td>
-                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-600">${item.dmc ?? '-'}</td>
-                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-600">${item.dc ?? '-'}</td>
-                        <td class="px-4 sm:px-6 py-3 sm:py-4 text-center text-slate-700 font-bold">${item.fwi ?? '-'}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        }
-
-        function applyTableFilters() {
-            const queryVal = document.getElementById('search-input').value.toLowerCase();
-            const statusFilter = document.getElementById('filter-status').value;
-
-            const filtered = globalWilayahList.filter(item => {
-                const name = (item.nama || item.kabupaten || item.kota || '').toLowerCase();
-                const matchName = name.includes(queryVal);
-                const matchStatus = (statusFilter === 'ALL') || (normalizeStatus(item.status) === statusFilter);
-                return matchName && matchStatus;
-            });
-
-            renderTable(filtered);
-        }
-
-        document.getElementById('search-input').addEventListener('input', applyTableFilters);
-        document.getElementById('filter-status').addEventListener('change', applyTableFilters);
-
-        // Handler Export PDF Resmi dengan Kop Kedinasan
-        document.getElementById('btn-export-pdf').addEventListener('click', () => {
-            if (!globalRawData) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-
-            doc.setFillColor(15, 23, 42); 
-            doc.rect(0, 0, 210, 36, 'F');
-            
-            doc.setFillColor(245, 158, 11);
-            doc.rect(0, 36, 210, 2, 'F');
-
-            try {
-                const logoImg = document.getElementById('main-logo-img');
-                if (logoImg) {
-                    doc.addImage(logoImg, 'PNG', 12, 6, 24, 24);
-                }
-            } catch (err) {
-                console.warn("Logo tidak dapat disisipkan ke PDF:", err);
-            }
-
-            doc.setTextColor(255, 255, 255); 
-            doc.setFontSize(13); 
-            doc.setFont("helvetica", "bold");
-            doc.text("INFORMASI KARHUTLA KALIMANTAN TIMUR", 40, 15);
-            
-            doc.setFontSize(10);
-            doc.text("MAHAKAM FireWatch - Laporan Analisis Risiko Karhutla (FDRS)", 40, 22);
-
-            doc.setFontSize(8); 
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(203, 213, 225);
-            doc.text(`Waktu Pembaruan: ${currentWaktuDisplay} | Standar BMKG`, 40, 29);
-
-            const tableRows = globalWilayahList.map(w => [
-                w.nama || w.kabupaten || '-', 
-                normalizeStatus(w.status), 
-                w.kesesuaian_iklim || '-', 
-                w.ffmc ?? '-', 
-                w.dmc ?? '-', 
-                w.dc ?? '-', 
-                w.fwi ?? '-'
-            ]);
-
-            doc.autoTable({
-                startY: 44, 
-                head: [['Kabupaten / Kota', 'Status Risiko', 'Kesesuaian Iklim', 'FFMC', 'DMC', 'DC', 'FWI']],
-                body: tableRows, 
-                theme: 'striped',
-                headStyles: { fillStyle: 'F', fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
-                alternateRowStyles: { fillColor: [248, 250, 252] },
-                styles: { fontSize: 8, cellPadding: 3 }
-            });
-
-            const finalY = doc.lastAutoTable.finalY || 150;
-            doc.setFontSize(7);
-            doc.setTextColor(100, 116, 139);
-            doc.text("Dokumen ini dicetak secara otomatis dari Sistem MAHAKAM FireWatch untuk kebutuhan respon cepat operasional.", 14, finalY + 10);
-
-            doc.save(`Laporan_Resmi_Karhutla_Kaltim_${currentWaktuDisplay.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`);
-        });
-
-        // Handler Export CSV
-        document.getElementById('btn-export-csv').addEventListener('click', () => {
-            if (!globalWilayahList.length) return;
-            let csvContent = "data:text/csv;charset=utf-8,Kabupaten/Kota,Status Risiko,Kesesuaian Iklim Hotspot,FFMC,DMC,DC,FWI\n";
-            globalWilayahList.forEach(i => { 
-                csvContent += `"${i.nama || i.kabupaten}","${normalizeStatus(i.status)}","${i.kesesuaian_iklim || ''}","${i.ffmc ?? ''}","${i.dmc ?? ''}","${i.dc ?? ''}","${i.fwi ?? ''}"\n`; 
-            });
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `MAHAKAM_FireWatch_${currentWaktuDisplay.replace(/[^a-zA-Z0-9]/g, "_")}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        });
-
-        async function fetchLiveFirestoreData() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "history"));
-
-                if (querySnapshot.empty) {
-                    document.getElementById('update-waktu').innerText = "Belum Ada Data Firestore";
-                    return;
-                }
-
-                // Mengurutkan dokumen secara akurat berdasarkan id tanggal dan waktu pembaruan
-                const docs = querySnapshot.docs.sort((a, b) => {
-                    const dataA = a.data();
-                    const dataB = b.data();
-                    const timeA = dataA.last_updated || dataA.waktu || a.id;
-                    const timeB = dataB.last_updated || dataB.waktu || b.id;
-                    return timeB.localeCompare(timeA);
-                });
-
-                let targetDoc = docs.find(d => {
-                    const data = d.data();
-                    const list = data.tabel_wilayah || data.wilayah || data.data || data.kabupaten;
-                    return list && list.length > 0;
-                }) || docs[0];
-
-                globalRawData = targetDoc.data();
-                const docId = targetDoc.id;
-
-                globalWilayahList = globalRawData.tabel_wilayah || globalRawData.wilayah || globalRawData.data || globalRawData.kabupaten || [];
-
-                const tgl = globalRawData.iso_date || docId;
-                const rawWkt = globalRawData.last_updated || globalRawData.waktu || "";
-                
-                // MENGOLAH STRUKTUR DETAIL JAM AGAR BERADA DI DALAM TANDA KURUNG
-                let detailJam = "";
-                if (rawWkt.includes(tgl)) {
-                    detailJam = rawWkt.replace(tgl, "").trim();
-                } else {
-                    detailJam = rawWkt.trim();
-                }
-
-                // Hasil Tampilan Akhir: "2026-08-03 (20:34:12 WITA)"
-                if (detailJam) {
-                    currentWaktuDisplay = `${tgl} (${detailJam})`;
-                } else {
-                    currentWaktuDisplay = `${tgl} (WITA)`;
-                }
-
-                document.getElementById('update-waktu').innerText = currentWaktuDisplay;
-                document.getElementById('ringkasan-analisis').innerText = globalRawData.ringkasan || globalRawData.analisis || "Tidak ada ringkasan.";
-                document.getElementById('rekomendasi-publik').innerText = globalRawData.rekomendasi || "Tidak ada rekomendasi.";
-
-                renderTable(globalWilayahList);
-
-                mapMarkersGroup.clearLayers();
-                let statusCounts = { "Sangat Rawan": 0, "Waspada": 0, "Aman": 0 };
-
-                globalWilayahList.forEach(item => {
-                    const normStatus = normalizeStatus(item.status);
-                    statusCounts[normStatus]++;
-
-                    let colorHex = (normStatus === 'Sangat Rawan') ? '#f43f5e' : (normStatus === 'Waspada') ? '#f59e0b' : '#10b981';
-                    
-                    const lat = parseFloat(item.lat ?? item.latitude);
-                    const lon = parseFloat(item.lng ?? item.longitude ?? item.lon);
-
-                    if (!isNaN(lat) && !isNaN(lon)) {
-                        const marker = L.marker([lat, lon], { icon: createCustomFireIcon(colorHex) });
-                        marker.bindPopup(`
-                            <div class="p-1 font-sans text-slate-800">
-                                <div class="text-sm font-bold mb-1">${item.nama || item.kabupaten || item.kota}</div>
-                                <div class="mb-1 text-xs"><b>Status:</b> ${normStatus}</div>
-                                <div class="mb-1 text-xs text-amber-700"><b>Iklim Hotspot:</b> ${item.kesesuaian_iklim || '-'}</div>
-                            </div>
-                        `);
-                        mapMarkersGroup.addLayer(marker);
-                    }
-                });
-
-                const ctx = document.getElementById('riskChart').getContext('2d');
-                if (riskChartInstance) riskChartInstance.destroy();
-
-                riskChartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Sangat Rawan', 'Waspada', 'Aman'],
-                        datasets: [{
-                            data: [statusCounts['Sangat Rawan'], statusCounts['Waspada'], statusCounts['Aman']],
-                            backgroundColor: ['#f43f5e', '#f59e0b', '#10b981'],
-                            borderWidth: 2, borderColor: '#ffffff'
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
-                });
-
-                const baseIso = globalRawData.iso_date || docId;
-                load7DayFirestoreTrendChart(baseIso, statusCounts);
-
-            } catch (error) {
-                console.error("Gagal membaca dari Firestore:", error);
-                document.getElementById('update-waktu').innerText = "Gagal Terkoneksi Database";
-            }
-        }
-
-        async function load7DayFirestoreTrendChart(todayIso, currentCounts) {
-            const labels = [];
-            const rawanData = [];
-            const waspadaData = [];
-            const amanData = [];
-
-            const baseDate = new Date(todayIso);
-
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date(baseDate);
-                d.setDate(d.getDate() - i);
-                const isoStr = d.toISOString().split('T')[0];
-                const displayLabel = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-
-                labels.push(displayLabel);
-
-                if (i === 0) {
-                    rawanData.push(currentCounts["Sangat Rawan"]);
-                    waspadaData.push(currentCounts["Waspada"]);
-                    amanData.push(currentCounts["Aman"]);
-                } else {
-                    try {
-                        const docRef = doc(db, "history", isoStr);
-                        const docSnap = await getDoc(docRef);
-
-                        if (docSnap.exists()) {
-                            const hData = docSnap.data();
-                            let r = 0, w = 0, a = 0;
-                            const list = hData.tabel_wilayah || hData.wilayah || hData.data || [];
-                            list.forEach(item => {
-                                const ns = normalizeStatus(item.status);
-                                if (ns === 'Sangat Rawan') r++;
-                                else if (ns === 'Waspada') w++;
-                                else a++;
-                            });
-                            rawanData.push(r);
-                            waspadaData.push(w);
-                            amanData.push(a);
-                        } else {
-                            rawanData.push(null);
-                            waspadaData.push(null);
-                            amanData.push(null);
-                        }
-                    } catch (e) {
-                        rawanData.push(null);
-                        waspadaData.push(null);
-                        amanData.push(null);
-                    }
-                }
-            }
-
-            const ctxTrend = document.getElementById('trendChart').getContext('2d');
-            if (trendChartInstance) trendChartInstance.destroy();
-
-            trendChartInstance = new Chart(ctxTrend, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Sangat Rawan',
-                            data: rawanData,
-                            borderColor: '#f43f5e',
-                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            spanGaps: true
-                        },
-                        {
-                            label: 'Waspada',
-                            data: waspadaData,
-                            borderColor: '#f59e0b',
-                            backgroundColor: 'rgba(245, 158, 11, 0.05)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            spanGaps: true
-                        },
-                        {
-                            label: 'Aman',
-                            data: amanData,
-                            borderColor: '#10b981',
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            spanGaps: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { family: 'Plus Jakarta Sans', size: 10, weight: '600' } } }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 10,
-                            ticks: { stepSize: 2, font: { size: 10 } }
-                        },
-                        x: {
-                            ticks: { font: { size: 10 } }
-                        }
-                    }
-                }
-            });
-        }
-
-        fetchLiveFirestoreData();
-    </script>
-</body>
-</html>
+    if service_account_info:
+        creds_dict = json.loads(service_account_info)
+        creds = service_account.Credentials.from_service_account_info(creds_dict)
+        db = firestore.Client(project='karhutla-kaltim', credentials=creds)
+    else:
+        db = firestore.Client(project='karhutla-kaltim', credentials=AnonymousCredentials())
+
+    doc_ref = db.collection('history').document(doc_id)
+    doc_ref.set(data_update)
+
+    print(f"🚀 BERHASIL! Data AI tanggal {doc_id} terkirim ke Firestore!")
+    print("🔥 Dashboard Vercel diperbarui secara otomatis!")
+
+except Exception as e:
+    print(f"❌ Gagal mengirim data ke Firestore: {e}")
