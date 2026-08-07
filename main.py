@@ -1,6 +1,6 @@
 import os
 import json
-import urllib.request
+import re
 from datetime import datetime, timezone, timedelta
 from google.auth.credentials import AnonymousCredentials
 from google.oauth2 import service_account
@@ -86,7 +86,7 @@ def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
     api_key = os.environ.get("GEMINI_API_KEY")
 
     if not api_key:
-        print("⚠️ GEMINI_API_KEY tidak ditemukan di environment variable.")
+        print("❌ ERROR: GEMINI_API_KEY tidak ditemukan pada environment variables GitHub Actions!")
         return (
             f"Pemantauan Karhutla Kalimantan Timur per {waktu_str} menunjukkan variasi tingkat kerawanan berdasarkan indeks FDRS BMKG.",
             "1. Tingkatkan patroli rutin pada daerah berstatus Waspada & Sangat Rawan.\n2. Koordinasi bersama BPBD dan BMKG.\n3. Dilarang membakar lahan."
@@ -95,47 +95,53 @@ def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
     try:
         genai.configure(api_key=api_key)
         
-        # Menggunakan model gemini-1.5-flash untuk kecepatan & keandalan JSON
+        # Menggunakan model gemini-1.5-flash
         model = genai.GenerativeModel('gemini-1.5-flash')
 
-        prompt = f"""
-        Anda adalah Senior Analis Meteorologi dan Karhutla dari BMKG & Pusdalops BPBD Kalimantan Timur.
-        Analisis data monitoring FDRS real-time per {waktu_str} berikut secara mendalam:
+        # Menyusun statistik wilayah untuk dimasukkan ke prompt
+        rawan_list = [w['kabupaten'] for w in data_wilayah if w['status'] == 'Sangat Rawan']
+        waspada_list = [w['kabupaten'] for w in data_wilayah if w['status'] == 'Waspada']
 
-        DATA EVALUASI WILAYAH:
+        prompt = f"""
+        Anda adalah Analis Senior Meteorologi & Karhutla dari BMKG dan Pusdalops BPBD Kalimantan Timur.
+        Analisis data monitoring FDRS real-time per {waktu_str} berikut secara spesifik, ilmiah, dan mendalam:
+
+        DATA EVALUASI WILAYAH KALTIM:
         {json.dumps(data_wilayah, indent=2)}
 
         PETUNJUK ANALISIS:
-        - Identifikasi kabupaten/kota mana saja yang berstatus 'Sangat Rawan' atau 'Waspada' secara spesifik. Sebutkan nama daerahnya!
-        - Soroti nilai Indeks Cuaca Kebakaran (FWI) dan Kode Kekeringan Gambut (DC) yang tinggi.
-        - Jelaskan implikasi kondisi cuaca tersebut terhadap potensi jilatan api dan kebakaran lahan gambut di wilayah Kaltim.
+        - Wilayah 'Sangat Rawan': {', '.join(rawan_list) if rawan_list else 'Tidak ada'}
+        - Wilayah 'Waspada': {', '.join(waspada_list) if waspada_list else 'Tidak ada'}
+        - Sebutkan secara eksplisit nama kabupaten/kota yang masuk kategori rawan atau waspada.
+        - Bahas implikasi indikator FWI dan kekeringan tanah (DC/DMC) terhadap potensi kebakaran hutan & lahan gambut di Kaltim.
 
-        FORMAT OUTPUT:
-        Kembalikan HANYA teks string JSON MURNI tanpa markdown (tanpa ```json ... ```) dengan 2 key:
-        1. "ringkasan": Narasi komprehensif 2-3 paragraf pendek yang detail, teknis, dan menyebutkan nama-nama kabupaten/kota yang perlu diwaspadai beserta alasannya.
-        2. "rekomendasi": Minimal 3-4 poin langkah taktis operasional spesifik bernomor (1., 2., 3., 4.) untuk tim Manggala Agni, BPBD, dan masyarakat setempat.
+        TUGAS:
+        Kembalikan respon JSON murni dengan 2 kunci:
+        "ringkasan": Paragraf narasi terperinci 2-3 paragraf mengenai evaluasi spasial dan meteorologi.
+        "rekomendasi": 4 poin tindakan taktis operasional bernomor (1., 2., 3., 4.) untuk tim pemadam dan masyarakat.
 
-        Contoh format valid:
-        {{"ringkasan": "Paragraf 1...\\n\\nParagraf 2...", "rekomendasi": "1. Poin satu\\n2. Poin dua\\n3. Poin tiga"}}
+        Format JSON:
+        {{"ringkasan": "Isi narasi...", "rekomendasi": "1. Poin satu\\n2. Poin dua\\n3. Poin tiga\\n4. Poin empat"}}
         """
 
         response = model.generate_content(prompt)
         raw_text = response.text.strip()
-        
-        # Pembersihan tag markdown jika AI secara tidak sengaja menyertakannya
-        if raw_text.startswith("```"):
-            raw_text = raw_text.split("```")[1]
-            if raw_text.startswith("json"):
-                raw_text = raw_text[4:]
-        raw_text = raw_text.strip()
+        print(f"📄 Respon mentah Gemini AI diterima (Panjang: {len(raw_text)} karakter)")
 
-        res_json = json.loads(raw_text)
+        # Pembersihan otomatis jika ada tag ```json
+        cleaned = re.sub(r'```(?:json)?', '', raw_text).strip()
 
-        print("✨ Gemini AI berhasil merumuskan analisis dan rekomendasi yang sangat rinci!")
-        return res_json.get("ringkasan"), res_json.get("rekomendasi")
+        try:
+            res_json = json.loads(cleaned)
+            print("✨ Gemini AI BERHASIL memproses analisis mendalam!")
+            return res_json.get("ringkasan"), res_json.get("rekomendasi")
+        except Exception as json_err:
+            print(f"⚠️ Gagal parse JSON dari Gemini ({json_err}), menggunakan respon teks langsung.")
+            # Cadangan jika Gemini merespon dengan teks biasa bukan format JSON
+            return (raw_text, "1. Lakukan pemantauan ground check di daerah berisiko tinggi.\n2. Tingkatkan kesiapsiagaan tim pemadam darat.\n3. Sosialisasi larangan membakar lahan.")
 
     except Exception as e:
-        print(f"⚠️ Gagal memproses Gemini AI: {e}. Menggunakan fallback.")
+        print(f"❌ Gagal memanggil Gemini API: {e}")
         return (
             f"Pemantauan Karhutla Kalimantan Timur per {waktu_str} menunjukkan variasi tingkat kerawanan berdasarkan indeks FDRS BMKG.",
             "1. Tingkatkan patroli rutin pada daerah berstatus Waspada & Sangat Rawan.\n2. Koordinasi bersama BPBD dan BMKG.\n3. Dilarang membakar lahan."
