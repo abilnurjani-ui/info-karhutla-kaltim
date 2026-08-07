@@ -5,7 +5,7 @@ from datetime import datetime, timezone, timedelta
 from google.auth.credentials import AnonymousCredentials
 from google.oauth2 import service_account
 from google.cloud import firestore
-import google.generativeai as genai
+from google import genai
 
 # ==========================================
 # 1. PERSIAPAN WAKTU (WITA / UTC+8)
@@ -79,66 +79,61 @@ for wil in WILAYAH_KALTIM:
     })
 
 # ==========================================
-# 4. GENERATOR ANALISIS DETIL VIA GEMINI AI
+# 4. GENERATOR ANALISIS VIA SDK NEW GEMINI
 # ==========================================
 def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
-    print("🤖 Menghubungi Gemini AI untuk menganalisis data Karhutla...")
+    print("🤖 Menghubungi Gemini AI (Google GenAI SDK) untuk menganalisis data...")
     api_key = os.environ.get("GEMINI_API_KEY")
 
     if not api_key:
-        print("❌ ERROR: GEMINI_API_KEY tidak ditemukan pada environment variables GitHub Actions!")
+        print("❌ ERROR: GEMINI_API_KEY tidak ditemukan!")
         return (
             f"Pemantauan Karhutla Kalimantan Timur per {waktu_str} menunjukkan variasi tingkat kerawanan berdasarkan indeks FDRS BMKG.",
             "1. Tingkatkan patroli rutin pada daerah berstatus Waspada & Sangat Rawan.\n2. Koordinasi bersama BPBD dan BMKG.\n3. Dilarang membakar lahan."
         )
 
     try:
-        genai.configure(api_key=api_key)
-        
-        # Menggunakan model gemini-1.5-flash
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Menggunakan client resmi Google GenAI terbaru
+        client = genai.Client(api_key=api_key)
 
-        # Menyusun statistik wilayah untuk dimasukkan ke prompt
         rawan_list = [w['kabupaten'] for w in data_wilayah if w['status'] == 'Sangat Rawan']
         waspada_list = [w['kabupaten'] for w in data_wilayah if w['status'] == 'Waspada']
 
         prompt = f"""
-        Anda adalah Analis Senior Meteorologi & Karhutla dari BMKG dan Pusdalops BPBD Kalimantan Timur.
-        Analisis data monitoring FDRS real-time per {waktu_str} berikut secara spesifik, ilmiah, dan mendalam:
+        Anda adalah Senior Analis Meteorologi & Karhutla dari BMKG dan Pusdalops BPBD Kalimantan Timur.
+        Analisis data monitoring FDRS real-time per {waktu_str} berikut secara mendalam, ilmiah, dan spesifik:
 
         DATA EVALUASI WILAYAH KALTIM:
         {json.dumps(data_wilayah, indent=2)}
 
         PETUNJUK ANALISIS:
-        - Wilayah 'Sangat Rawan': {', '.join(rawan_list) if rawan_list else 'Tidak ada'}
-        - Wilayah 'Waspada': {', '.join(waspada_list) if waspada_list else 'Tidak ada'}
-        - Sebutkan secara eksplisit nama kabupaten/kota yang masuk kategori rawan atau waspada.
-        - Bahas implikasi indikator FWI dan kekeringan tanah (DC/DMC) terhadap potensi kebakaran hutan & lahan gambut di Kaltim.
+        - Sebutkan secara eksplisit nama kabupaten/kota yang masuk kategori 'Sangat Rawan' ({', '.join(rawan_list) if rawan_list else 'Tidak Ada'}) dan 'Waspada' ({', '.join(waspada_list) if waspada_list else 'Tidak Ada'}).
+        - Bahas implikasi indikator FWI dan kekeringan tanah (DC/DMC) terhadap potensi kebakaran lahan gambut di Kaltim.
 
         TUGAS:
-        Kembalikan respon JSON murni dengan 2 kunci:
-        "ringkasan": Paragraf narasi terperinci 2-3 paragraf mengenai evaluasi spasial dan meteorologi.
+        Kembalikan respon JSON murni (tanpa markdown ```json) dengan 2 kunci:
+        "ringkasan": Narasi terperinci 2-3 paragraf mengenai evaluasi spasial dan meteorologi.
         "rekomendasi": 4 poin tindakan taktis operasional bernomor (1., 2., 3., 4.) untuk tim pemadam dan masyarakat.
 
-        Format JSON:
+        Format JSON wajib:
         {{"ringkasan": "Isi narasi...", "rekomendasi": "1. Poin satu\\n2. Poin dua\\n3. Poin tiga\\n4. Poin empat"}}
         """
 
-        response = model.generate_content(prompt)
-        raw_text = response.text.strip()
-        print(f"📄 Respon mentah Gemini AI diterima (Panjang: {len(raw_text)} karakter)")
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
 
-        # Pembersihan otomatis jika ada tag ```json
+        raw_text = response.text.strip()
         cleaned = re.sub(r'```(?:json)?', '', raw_text).strip()
 
         try:
             res_json = json.loads(cleaned)
-            print("✨ Gemini AI BERHASIL memproses analisis mendalam!")
+            print("✨ Gemini AI BERHASIL merumuskan analisis mendalam!")
             return res_json.get("ringkasan"), res_json.get("rekomendasi")
         except Exception as json_err:
-            print(f"⚠️ Gagal parse JSON dari Gemini ({json_err}), menggunakan respon teks langsung.")
-            # Cadangan jika Gemini merespon dengan teks biasa bukan format JSON
-            return (raw_text, "1. Lakukan pemantauan ground check di daerah berisiko tinggi.\n2. Tingkatkan kesiapsiagaan tim pemadam darat.\n3. Sosialisasi larangan membakar lahan.")
+            print(f"⚠️ Respon teks diterima langsung tanpa format JSON: {json_err}")
+            return (cleaned, "1. Lakukan pemantauan ground check di daerah berisiko tinggi.\n2. Tingkatkan kesiapsiagaan tim pemadam darat.\n3. Sosialisasi larangan membakar lahan.")
 
     except Exception as e:
         print(f"❌ Gagal memanggil Gemini API: {e}")
