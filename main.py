@@ -79,7 +79,7 @@ for wil in WILAYAH_KALTIM:
     })
 
 # ==========================================
-# 4. GENERATOR ANALISIS VIA SDK NEW GEMINI
+# 4. GENERATOR ANALISIS VIA GEMINI AI
 # ==========================================
 def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
     print("🤖 Menghubungi Gemini AI (Google GenAI SDK) untuk menganalisis data...")
@@ -93,7 +93,6 @@ def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
         )
 
     try:
-        # Menggunakan client resmi Google GenAI terbaru
         client = genai.Client(api_key=api_key)
 
         rawan_list = [w['kabupaten'] for w in data_wilayah if w['status'] == 'Sangat Rawan']
@@ -119,8 +118,9 @@ def hasilkan_analisis_gemini_ai(data_wilayah, waktu_str):
         {{"ringkasan": "Isi narasi...", "rekomendasi": "1. Poin satu\\n2. Poin dua\\n3. Poin tiga\\n4. Poin empat"}}
         """
 
+        # Memanggil model gemini-3.6-flash
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.6-flash',
             contents=prompt
         )
 
